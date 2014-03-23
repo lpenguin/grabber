@@ -47,6 +47,6 @@ public class Writer implements Runnable{
     }
 
     private void write(Result result){
-        System.out.println("Writing: "+result);
+        System.out.println("Writing: "+result.getBody());
     }
 }
