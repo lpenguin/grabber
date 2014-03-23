@@ -1,5 +1,6 @@
 package grabber;
 
+import org.apache.http.client.fluent.Request;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
@@ -36,6 +37,6 @@ public class Downloader implements Runnable{
 
     private Writer.Result download(URL url) throws IOException {
         System.out.println("Downloading: "+url);
-        return new Writer.Result(url, Jsoup.connect(url.toString()).get().html());
+        return new Writer.Result(url, Request.Get(url.toString()).execute().returnContent().asString());
     }
 }
