@@ -1,5 +1,8 @@
 package grabber;
 
+import org.jsoup.Jsoup;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.BlockingQueue;
 
@@ -19,13 +22,19 @@ public class Downloader implements Runnable{
     @Override
     public void run() {
         try {
-            writer.write(download(queue.take()));
+            while(true) {
+                try{
+                    writer.write(download(queue.take()));
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private Writer.Result download(URL url){
-        return null;
+    private Writer.Result download(URL url) throws IOException {
+        return new Writer.Result(url, Jsoup.connect(url.toString()).get().html());
     }
 }
