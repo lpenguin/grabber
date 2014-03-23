@@ -35,6 +35,7 @@ public class Downloader implements Runnable{
     }
 
     private Writer.Result download(URL url) throws IOException {
+        System.out.println("Downloading: "+url);
         return new Writer.Result(url, Jsoup.connect(url.toString()).get().html());
     }
 }

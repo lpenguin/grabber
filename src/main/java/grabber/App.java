@@ -36,5 +36,7 @@ public class App {
         for(int i = 0; i < downloadersCount; i++){
             executorService.submit(new Downloader(downloadQueue, writeQueue));
         }
+
+        executorService.submit(new DownloadsFiller(downloadQueue, 5*1000));
     }
 }
