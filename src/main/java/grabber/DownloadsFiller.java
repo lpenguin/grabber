@@ -3,11 +3,9 @@ package grabber;
 import grabber.data.DownloadTask;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -27,7 +25,7 @@ public class DownloadsFiller implements Runnable {
     public void run() {
         try {
             while (true) {
-                List<DownloadTask> uris = pollNewDownloads();
+                List<DownloadTask> uris = searchNewDownloads();
                 downloadQueue.addAll(uris);
                 Thread.sleep(sleepMillis);
             }
@@ -37,7 +35,7 @@ public class DownloadsFiller implements Runnable {
 
     }
 
-    private List<DownloadTask> pollNewDownloads() throws InterruptedException{
+    private List<DownloadTask> searchNewDownloads() throws InterruptedException{
         LinkedList<DownloadTask> urls = new LinkedList<DownloadTask>();
         try {
             urls.add(new DownloadTask(DownloadTask.Type.HTML, new URL("http://habr.ru")));

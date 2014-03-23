@@ -3,6 +3,7 @@ package grabber;
 import grabber.data.DownloadResult;
 import grabber.data.DownloadTask;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +28,14 @@ public class App {
 
     public static void main(String[] args){
         App app = new App(3, 2);
-        app.process();
+        try {
+            System.out.println((new FeedSearcher()).search(new URL("http://habr.ru")));
+            System.out.println((new FeedSearcher()).search(new URL("http://vk.com")));
+            System.out.println((new FeedSearcher()).search(new URL("http://pravda.com.ua")));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        //app.process();
     }
 
     public void process(){
