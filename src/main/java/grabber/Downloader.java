@@ -10,13 +10,13 @@ import java.util.concurrent.BlockingQueue;
  * Created by nikita on 23.03.14.
  */
 public class Downloader implements Runnable{
-    private BlockingQueue<URL> queue;
-    private Writer writer;
+    private BlockingQueue<URL> downloadQueue;
+    private BlockingQueue<Writer.Result> writeQueue;
 
 
-    public Downloader(BlockingQueue<URL> queue, Writer writer) {
-        this.queue = queue;
-        this.writer = writer;
+    public Downloader(BlockingQueue<URL> downloadQueue, BlockingQueue<Writer.Result> writeQueue) {
+        this.downloadQueue = downloadQueue;
+        this.writeQueue = writeQueue;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Downloader implements Runnable{
         try {
             while(true) {
                 try{
-                    writer.write(download(queue.take()));
+                    writeQueue.put(download(downloadQueue.take()));
                 }catch (IOException e){
                     e.printStackTrace();
                 }
