@@ -1,7 +1,8 @@
 package grabber;
 
+import grabber.data.DownloadResult;
+import grabber.data.DownloadTask;
 import org.apache.http.client.fluent.Request;
-import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.net.URL;
@@ -11,11 +12,11 @@ import java.util.concurrent.BlockingQueue;
  * Created by nikita on 23.03.14.
  */
 public class Downloader implements Runnable{
-    private BlockingQueue<URL> downloadQueue;
-    private BlockingQueue<Writer.Result> writeQueue;
+    private BlockingQueue<DownloadTask> downloadQueue;
+    private BlockingQueue<DownloadResult> writeQueue;
 
 
-    public Downloader(BlockingQueue<URL> downloadQueue, BlockingQueue<Writer.Result> writeQueue) {
+    public Downloader(BlockingQueue<DownloadTask> downloadQueue, BlockingQueue<DownloadResult> writeQueue) {
         this.downloadQueue = downloadQueue;
         this.writeQueue = writeQueue;
     }
@@ -35,8 +36,8 @@ public class Downloader implements Runnable{
         }
     }
 
-    private Writer.Result download(URL url) throws IOException {
-        System.out.println("Downloading: "+url);
-        return new Writer.Result(url, Request.Get(url.toString()).execute().returnContent().asString());
+    private DownloadResult download(DownloadTask task) throws IOException {
+        System.out.println("Downloading: "+task.getUrl());
+        return new DownloadResult(task.getUrl(), Request.Get(task.getUrl().toString()).execute().returnContent().asString());
     }
 }

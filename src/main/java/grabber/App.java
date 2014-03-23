@@ -1,5 +1,8 @@
 package grabber;
 
+import grabber.data.DownloadResult;
+import grabber.data.DownloadTask;
+
 import java.net.URL;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -10,8 +13,8 @@ import java.util.concurrent.LinkedBlockingDeque;
  * Created by nikita on 23.03.14.
  */
 public class App {
-    private BlockingQueue<URL> downloadQueue = new LinkedBlockingDeque<URL>();
-    private BlockingQueue<Writer.Result> writeQueue = new LinkedBlockingDeque<Writer.Result>();
+    private BlockingQueue<DownloadTask> downloadQueue = new LinkedBlockingDeque<DownloadTask>();
+    private BlockingQueue<DownloadResult> writeQueue = new LinkedBlockingDeque<DownloadResult>();
 
     private int writersCount;
     private int downloadersCount;

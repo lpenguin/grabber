@@ -1,36 +1,17 @@
 package grabber;
 
-import java.net.URL;
+import grabber.data.DownloadResult;
+
 import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by nikita on 23.03.14.
  */
 public class Writer implements Runnable{
-    public static class Result{
-        public URL getUrl() {
-            return url;
-        }
 
-        public String getBody() {
-            return body;
-        }
+    private BlockingQueue<DownloadResult> writeQueue;
 
-        public Result(URL url, String body) {
-
-            this.url = url;
-            this.body = body;
-        }
-
-        private URL url;
-        private String body;
-
-
-    }
-
-    private BlockingQueue<Result> writeQueue;
-
-    public Writer(BlockingQueue<Result> writeQueue) {
+    public Writer(BlockingQueue<DownloadResult> writeQueue) {
         this.writeQueue = writeQueue;
     }
 
@@ -45,7 +26,7 @@ public class Writer implements Runnable{
         }
     }
 
-    private void write(Result result){
-        System.out.println("Writing: "+result.getBody());
+    private void write(DownloadResult downloadResult){
+        System.out.println("Writing: "+ downloadResult.getBody());
     }
 }

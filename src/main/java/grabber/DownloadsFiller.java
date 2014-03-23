@@ -1,5 +1,7 @@
 package grabber;
 
+import grabber.data.DownloadTask;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -13,10 +15,10 @@ import java.util.concurrent.BlockingQueue;
  */
 public class DownloadsFiller implements Runnable {
 
-    private BlockingQueue<URL> downloadQueue;
+    private BlockingQueue<DownloadTask> downloadQueue;
     private final int sleepMillis;
 
-    public DownloadsFiller(BlockingQueue<URL> downloadQueue, int sleepMillis) {
+    public DownloadsFiller(BlockingQueue<DownloadTask> downloadQueue, int sleepMillis) {
         this.downloadQueue = downloadQueue;
         this.sleepMillis = sleepMillis;
     }
@@ -25,7 +27,7 @@ public class DownloadsFiller implements Runnable {
     public void run() {
         try {
             while (true) {
-                List<URL> uris = pollNewDownloads();
+                List<DownloadTask> uris = pollNewDownloads();
                 downloadQueue.addAll(uris);
                 Thread.sleep(sleepMillis);
             }
@@ -35,13 +37,14 @@ public class DownloadsFiller implements Runnable {
 
     }
 
-    private List<URL> pollNewDownloads() throws InterruptedException{
-        LinkedList<URL> urls = new LinkedList<URL>();
+    private List<DownloadTask> pollNewDownloads() throws InterruptedException{
+        LinkedList<DownloadTask> urls = new LinkedList<DownloadTask>();
         try {
-            urls.add(new URL("http://habr.ru"));
-            urls.add(new URL("http://habr.ru"));
-            urls.add(new URL("http://habr.ru"));
-            urls.add(new URL("http://habr.ru"));
+            urls.add(new DownloadTask(DownloadTask.Type.HTML, new URL("http://habr.ru")));
+            urls.add(new DownloadTask(DownloadTask.Type.HTML, new URL("http://habr.ru")));
+            urls.add(new DownloadTask(DownloadTask.Type.HTML, new URL("http://habr.ru")));
+            urls.add(new DownloadTask(DownloadTask.Type.HTML, new URL("http://habr.ru")));
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
