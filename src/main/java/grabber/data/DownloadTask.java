@@ -7,11 +7,17 @@ import java.net.URL;
  */
 public class DownloadTask {
     public enum Type {
-        RSS, HTML
+        RSS, HTML, RSS_SEARCH
     }
 
-    private Type type;
-    private URL url;
+    final private Type type;
+    final private URL url;
+
+    public Domain getDomain() {
+        return domain;
+    }
+
+    final private Domain domain;
 
     public Type getType() {
         return type;
@@ -21,8 +27,8 @@ public class DownloadTask {
         return url;
     }
 
-    public DownloadTask(Type type, URL url) {
-
+    public DownloadTask(Type type, Domain domain, URL url) {
+        this.domain = domain;
         this.type = type;
         this.url = url;
     }

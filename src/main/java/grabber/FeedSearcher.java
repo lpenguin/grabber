@@ -4,11 +4,15 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import grabber.data.Domain;
+import grabber.data.DownloadTask;
+import grabber.workers.Pushable;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,25 +21,22 @@ import java.net.URL;
  * Created by nikita on 24.03.14.
  */
 public class FeedSearcher {
-    private static final int HTTP_OK = 200;
-    public URL search(URL site){
-        URL res = searchType(site, "rss");
-        if(res == null )
-            return searchType(site, "atom");
-        return res;
+    public FeedSearcher(Pushable<DownloadTask> toDownload) {
+        this.toDownload = toDownload;
     }
 
-    private URL searchType(URL site, String type){
+    private final Pushable<DownloadTask> toDownload;
+
+    public void search(Domain site){
         try {
-            URL url = new URL(String.format("%s://%s/%s", site.getProtocol(), site.getHost(), type));
-            (new SyndFeedInput()).build(new XmlReader(url));
-            return url;
-        }catch (IOException e) {
-//            e.printStackTrace();
-            return null;
-        } catch (FeedException e) {
-//            e.printStackTrace();
-            return null;
+            toDownload.push(new DownloadTask(DownloadTask.Type.RSS_SEARCH, site, searchType(site.getUrl(), "rss")));
+            toDownload.push(new DownloadTask(DownloadTask.Type.RSS_SEARCH, site, searchType(site.getUrl(), "atom")));
+        }catch (MalformedURLException e){
+            System.out.println("Invalid url: "+e);
         }
+    }
+
+    private URL searchType(URL site, String type) throws MalformedURLException {
+        return new URL(String.format("%s://%s/%s", site.getProtocol(), site.getHost(), type));
     }
 }

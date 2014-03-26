@@ -1,7 +1,11 @@
 package grabber;
 
+import grabber.data.Domain;
 import grabber.data.DownloadResult;
 import grabber.data.DownloadTask;
+import grabber.workers.ContentWriter;
+import grabber.workers.Downloader;
+import grabber.workers.DownloadsHandler;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,40 +18,36 @@ import java.util.concurrent.LinkedBlockingDeque;
  * Created by nikita on 23.03.14.
  */
 public class App {
-    private BlockingQueue<DownloadTask> downloadQueue = new LinkedBlockingDeque<DownloadTask>();
-    private BlockingQueue<DownloadResult> writeQueue = new LinkedBlockingDeque<DownloadResult>();
+    private final Downloader downloader;
+    private final DownloadsHandler downloadsHandler;
+    private final ContentWriter contentWriter;
+    private final FeedSearcher feedSearcher;
 
-    private int writersCount;
-    private int downloadersCount;
-
-    public App(int writersCount, int downloadersCount) {
-        this.writersCount = writersCount;
-        this.downloadersCount = downloadersCount;
-
+    public App() {
+        contentWriter = new ContentWriter();
+        downloader = new Downloader(10);
+        downloadsHandler = new DownloadsHandler(contentWriter, downloader);
+        downloader.setDownloadTo(downloadsHandler);
+        feedSearcher = new FeedSearcher(downloader);
     }
 
     public static void main(String[] args){
-        App app = new App(3, 2);
-        try {
-            System.out.println((new FeedSearcher()).search(new URL("http://habr.ru")));
-            System.out.println((new FeedSearcher()).search(new URL("http://vk.com")));
-            System.out.println((new FeedSearcher()).search(new URL("http://pravda.com.ua")));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        //app.process();
+        App app = new App();
+        app.process();
     }
 
     public void process(){
-        ExecutorService executorService = Executors.newFixedThreadPool(20);
-        for(int i = 0; i < writersCount; i++){
-            executorService.submit(new Writer(writeQueue));
-        }
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        executorService.execute(contentWriter);
+        executorService.execute(downloader);
+        executorService.execute(downloadsHandler);
 
-        for(int i = 0; i < downloadersCount; i++){
-            executorService.submit(new Downloader(downloadQueue, writeQueue));
-        }
+        try {
+            feedSearcher.search(new Domain("vk.com", new URL("http://vk.com")));
+            feedSearcher.search(new Domain("habr.ru", new URL("http://habr.ru")));
+            feedSearcher.search(new Domain("pravda.com.ua", new URL("http://pravda.com.ua")));
+        }catch (MalformedURLException e){
 
-        executorService.submit(new DownloadsFiller(downloadQueue, 5*1000));
+        }
     }
 }
