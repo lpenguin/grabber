@@ -1,7 +1,7 @@
 package grabber.workers;
 
-import grabber.data.DownloadResult;
-import grabber.data.DownloadTask;
+import grabber.result.DownloadResult;
+import grabber.task.DownloadTask;
 import org.apache.http.client.fluent.Request;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     }
     @Override
     public void push(DownloadTask object) {
-        System.out.printf("New task: %s, %s%n", object.getType(), object.getUrl());
+        System.out.printf("New task: %s", object.getClass().getSimpleName());
         tasks.add(object);
     }
 
@@ -55,7 +55,7 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
             for (Future<DownloadResult> result : results) {
                 if(result.isDone()) {
                     DownloadResult downloadResult = result.get();
-                    System.out.println("Task is done: "+downloadResult.getDownloadTask().getType()+", "+downloadResult.getDownloadTask().getUrl());
+                    System.out.println("Task is done: "+downloadResult.getClass().getSimpleName()+", "+downloadResult.toString());
                     downloadTo.push(downloadResult);
                     results.remove(result);
                 }
@@ -87,19 +87,10 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
 
         @Override
         public DownloadResult call() throws Exception {
-            return download(task);
+            return task.download();
         }
 
-        private DownloadResult download(DownloadTask task){
-            System.out.println("Downloading: "+task.getType()+", "+task.getUrl());
-            try {
-                String body = Request.Get(task.getUrl().toString()).execute().returnContent().asString();
-                return new DownloadResult(task, body, true);
-            } catch (IOException e) {
-                return new DownloadResult(task, "", false);
-            }
 
-        }
     }
 
 }

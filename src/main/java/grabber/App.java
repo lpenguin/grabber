@@ -1,46 +1,61 @@
 package grabber;
 
 import grabber.data.Domain;
-import grabber.data.DownloadResult;
-import grabber.data.DownloadTask;
-import grabber.workers.ContentWriter;
+import grabber.workers.ContentStore;
 import grabber.workers.Downloader;
-import grabber.workers.DownloadsHandler;
+import grabber.workers.ResultsHandler;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by nikita on 23.03.14.
  */
 public class App {
     private final Downloader downloader;
-    private final DownloadsHandler downloadsHandler;
-    private final ContentWriter contentWriter;
+    private final ResultsHandler resultsHandler;
+
+    public ContentStore getContentStore() {
+        return contentStore;
+    }
+
+    private final ContentStore contentStore;
     private final FeedSearcher feedSearcher;
 
-    public App() {
-        contentWriter = new ContentWriter();
+    private static App instance;
+
+    public static App getInstance(){
+        if(instance == null)
+            instance = new App();
+        return instance;
+    }
+
+    private App() {
+        contentStore = new ContentStore();
         downloader = new Downloader(10);
-        downloadsHandler = new DownloadsHandler(contentWriter, downloader);
-        downloader.setDownloadTo(downloadsHandler);
+        resultsHandler = new ResultsHandler(contentStore, downloader);
+        downloader.setDownloadTo(resultsHandler);
         feedSearcher = new FeedSearcher(downloader);
+        try {
+            TwitterAdapter.getInstance().configure("lilac_penguin", "gfhjkm_31");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args){
         App app = new App();
-        app.process();
+        //app.process();
     }
 
     public void process(){
         ExecutorService executorService = Executors.newFixedThreadPool(3);
-        executorService.execute(contentWriter);
+        executorService.execute(contentStore);
         executorService.execute(downloader);
-        executorService.execute(downloadsHandler);
+        executorService.execute(resultsHandler);
 
         try {
             feedSearcher.search(new Domain("vk.com", new URL("http://vk.com")));

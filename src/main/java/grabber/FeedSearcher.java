@@ -1,20 +1,11 @@
 package grabber;
 
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
 import grabber.data.Domain;
-import grabber.data.DownloadTask;
+import grabber.task.DownloadTask;
+import grabber.task.RssSearchTask;
 import grabber.workers.Pushable;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -29,8 +20,8 @@ public class FeedSearcher {
 
     public void search(Domain site){
         try {
-            toDownload.push(new DownloadTask(DownloadTask.Type.RSS_SEARCH, site, searchType(site.getUrl(), "rss")));
-            toDownload.push(new DownloadTask(DownloadTask.Type.RSS_SEARCH, site, searchType(site.getUrl(), "atom")));
+            toDownload.push(new RssSearchTask(site, searchType(site.getUrl(), "atom")));
+            toDownload.push(new RssSearchTask(site, searchType(site.getUrl(), "rss")));
         }catch (MalformedURLException e){
             System.out.println("Invalid url: "+e);
         }

@@ -1,6 +1,6 @@
 package grabber.workers;
 
-import grabber.data.DownloadResult;
+import grabber.result.DownloadResult;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -8,11 +8,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by nikita on 23.03.14.
  */
-public class ContentWriter implements Runnable, Pushable<DownloadResult>{
+public class ContentStore implements Runnable, Pushable<DownloadResult>{
 
     private BlockingQueue<DownloadResult> writeQueue = new LinkedBlockingQueue<DownloadResult>();
 
-    public ContentWriter() {
+    public ContentStore() {
 
     }
 
@@ -28,7 +28,7 @@ public class ContentWriter implements Runnable, Pushable<DownloadResult>{
     }
 
     private void write(DownloadResult downloadResult){
-        System.out.println("Writing: "+downloadResult.getDownloadTask().getUrl());
+        System.out.println("Writing: "+downloadResult.getDownloadTask().getClass().getSimpleName());
     }
 
     @Override

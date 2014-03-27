@@ -19,6 +19,7 @@
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:fluent-hc:4.3.3" level="project" />
     <orderEntry type="library" name="Maven: rome:rome:1.0" level="project" />
     <orderEntry type="library" name="Maven: jdom:jdom:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.twitter4j:twitter4j-core:3.0.5" level="project" />
   </component>
 </module>
 
