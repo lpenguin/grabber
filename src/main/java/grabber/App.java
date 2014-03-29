@@ -1,6 +1,8 @@
 package grabber;
 
 import grabber.data.Domain;
+import grabber.feed.TwitterFeed;
+import grabber.task.TwitterDownloadTask;
 import grabber.workers.ContentStore;
 import grabber.workers.Downloader;
 import grabber.workers.ResultsHandler;
@@ -8,8 +10,13 @@ import grabber.workers.ResultsHandler;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * Created by nikita on 23.03.14.
@@ -17,6 +24,8 @@ import java.util.concurrent.Executors;
 public class App {
     private final Downloader downloader;
     private final ResultsHandler resultsHandler;
+    private ExecutorService executorService;
+    private final List<Future> futures = new LinkedList<Future>();
 
     public ContentStore getContentStore() {
         return contentStore;
@@ -40,29 +49,66 @@ public class App {
         downloader.setDownloadTo(resultsHandler);
         feedSearcher = new FeedSearcher(downloader);
         try {
-            TwitterAdapter.getInstance().configure("lilac_penguin", "gfhjkm_31");
+            TwitterConfigurator.getInstance().configure();
+            if(TwitterConfigurator.getInstance().getAccessToken() == null)
+                TwitterConfigurator.getInstance().loadAccessTokenInteractive();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                System.out.println("SHUTDOWN HOOOK");
+                for (Future future : futures) {
+                    future.cancel(true);
+                }
+
+                //TODO: нужен ли shutdown и awaitTermination?
+                try {
+                    executorService.shutdown();
+                    executorService.awaitTermination(10, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                executorService.shutdown();
+//                try {
+//                    executorService.awaitTermination(10, TimeUnit.SECONDS);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                List<Runnable> runnables = executorService.shutdownNow();
+                super.run();
+            }
+        });
     }
 
     public static void main(String[] args){
         App app = new App();
-        //app.process();
+        app.process();
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.exit(0);
     }
 
     public void process(){
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
-        executorService.execute(contentStore);
-        executorService.execute(downloader);
-        executorService.execute(resultsHandler);
+        executorService = Executors.newFixedThreadPool(3);
+        futures.add(executorService.submit(contentStore));
+        futures.add(executorService.submit(downloader));
+        futures.add(executorService.submit(resultsHandler));
 
-        try {
-            feedSearcher.search(new Domain("vk.com", new URL("http://vk.com")));
-            feedSearcher.search(new Domain("habr.ru", new URL("http://habr.ru")));
-            feedSearcher.search(new Domain("pravda.com.ua", new URL("http://pravda.com.ua")));
-        }catch (MalformedURLException e){
-
-        }
+//        try {
+//            Domain domain = new Domain("pravda.com.ua", new URL("http://pravda.com.ua"));
+//            downloader.push(new TwitterDownloadTask(domain, new TwitterFeed(domain, "UkrPravda_news"), 1));
+////            feedSearcher.search(new Domain("vk.com", new URL("http://vk.com")));
+//            feedSearcher.search(new Domain("habr.ru", new URL("http://habr.ru")));
+////            feedSearcher.search(domain);
+//        }catch (MalformedURLException e){
+//
+//        }
     }
 }

@@ -3,6 +3,7 @@ package grabber.workers;
 import grabber.result.DownloadResult;
 import grabber.task.DownloadTask;
 import org.apache.http.client.fluent.Request;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.*;
@@ -11,6 +12,8 @@ import java.util.concurrent.*;
  * Created by nikita on 23.03.14.
  */
 public class Downloader implements Runnable, Pushable<DownloadTask> {
+    private final Logger logger = Logger.getLogger(Downloader.class);
+
     Pushable<DownloadResult> downloadTo;
     final BlockingQueue<DownloadTask> tasks = new LinkedBlockingQueue<DownloadTask>();
     final ExecutorService workerService;
@@ -36,13 +39,14 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     @Override
     public void run() {
         try {
+            logger.info("Starting");
             handlerService.execute(resultsHandler);
-            while(true) {
+            while(!Thread.interrupted()) {
                 resultsHandler.addFuture(workerService.submit(new Worker(tasks.take())));
             }
+            logger.info("exiting");
         } catch (InterruptedException e) {
-            System.out.println("Downloader interrupted. Exiting");
-            return;
+            logger.error("interrupted");
         }
     }
 
@@ -65,14 +69,14 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
         @Override
         public void run() {
             try {
-                while (true) {
+                while (!Thread.interrupted()) {
                     checkResults();
                 }
+                logger.info("exiting");
             }catch (InterruptedException e){
-                System.out.println("ResultsHandler interrupted. Exiting");
-                return;
+                logger.error("InterruptedException exiting");
             } catch (ExecutionException e) {
-                System.out.println("ResultsHandler execution ex");
+                logger.error("ExecutionException exiting", e);
                 e.printStackTrace();
             }
         }

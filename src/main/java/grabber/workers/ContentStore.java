@@ -1,6 +1,7 @@
 package grabber.workers;
 
 import grabber.result.DownloadResult;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -9,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by nikita on 23.03.14.
  */
 public class ContentStore implements Runnable, Pushable<DownloadResult>{
-
+    private final Logger logger = Logger.getLogger(ContentStore.class);
     private BlockingQueue<DownloadResult> writeQueue = new LinkedBlockingQueue<DownloadResult>();
 
     public ContentStore() {
@@ -19,11 +20,13 @@ public class ContentStore implements Runnable, Pushable<DownloadResult>{
     @Override
     public void run() {
         try {
-            while (true) {
+            logger.info("Starting");
+            while (!Thread.interrupted()) {
                 write(writeQueue.take());
             }
+            logger.info("exiting");
         }catch (InterruptedException e){
-            e.printStackTrace();
+            logger.error("interrupted");
         }
     }
 

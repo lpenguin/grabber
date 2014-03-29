@@ -1,10 +1,9 @@
 package grabber;
 
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.*;
@@ -12,9 +11,9 @@ import java.io.*;
 /**
  * Created by nikita on 27.03.14.
  */
-public class TwitterAdapter {
+public class TwitterConfigurator {
     private static final String TOKEN_FILE = "token.dat";
-    private static TwitterAdapter instance;
+    private static TwitterConfigurator instance;
 
     private Twitter twitter;
 
@@ -24,9 +23,9 @@ public class TwitterAdapter {
 
     private AccessToken accessToken;
 
-    public static TwitterAdapter getInstance(){
+    public static TwitterConfigurator getInstance(){
         if(instance == null)
-            instance = new TwitterAdapter();
+            instance = new TwitterConfigurator();
         return instance;
     }
 
@@ -61,7 +60,20 @@ public class TwitterAdapter {
         return accessToken;
     }
 
-    private void loadAccessTokenInteractive(){
+//    public ResponseList<Status> downloadFeed(TwitterFeed feed) throws TwitterException {
+//        ResponseList<Status> userTimeline = twitter.getUserTimeline(feed.getAccountName(), new Paging(1, 50));
+////        for (Status status : userTimeline) {
+////            System.out.println(status.getUser()+" "+status.getText());
+////        }
+//        return userTimeline;
+//
+//    }
+
+    public Twitter getTwitter(){
+        return twitter;
+    }
+
+    public void loadAccessTokenInteractive(){
         RequestToken requestToken = null;
         try {
             requestToken = twitter.getOAuthRequestToken();
@@ -102,14 +114,21 @@ public class TwitterAdapter {
     }
 
     public void configure() throws IOException {
+
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setOAuthConsumerKey("oywTVGhMSHULqO6h3JzA");
         cb.setOAuthConsumerSecret("K1qj6qRTzjvNj4OEsyovQNxVULSGweyp25RcZvAdU");
         cb.setDebugEnabled(true);
-        TwitterFactory twitterFactory = new TwitterFactory(cb.build());
-
+        cb.setIncludeEntitiesEnabled(true);
+        cb.setIncludeEntitiesEnabled(true);
+        cb.setIncludeMyRetweetEnabled(true);
+        Configuration build = cb.build();
+        TwitterFactory twitterFactory = new TwitterFactory(build);
         twitter = twitterFactory.getInstance();
-
         accessToken = readAccessToken();
+
+        if(accessToken != null)
+            twitter.setOAuthAccessToken(accessToken);
+
     }
 }

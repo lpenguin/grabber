@@ -2,11 +2,16 @@ package grabber.feed;
 
 import grabber.data.Domain;
 import grabber.task.DownloadTask;
+import grabber.task.TwitterDownloadTask;
 
 /**
  * Created by nikita on 27.03.14.
  */
 public class TwitterFeed extends FeedBase{
+    public String getAccountName() {
+        return accountName;
+    }
+
     private final String accountName;
 
     public TwitterFeed(Domain domain, String accountName) {
@@ -16,6 +21,6 @@ public class TwitterFeed extends FeedBase{
 
     @Override
     public DownloadTask getTask() {
-        return null;
+        return new TwitterDownloadTask(getDomain(), this, 1);
     }
 }
