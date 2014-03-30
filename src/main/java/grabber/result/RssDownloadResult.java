@@ -2,7 +2,7 @@ package grabber.result;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
-import grabber.feed.RssFeed;
+import grabber.data.feed.RssFeed;
 import grabber.task.RssDownloadTask;
 import grabber.workers.ResultsHandler;
 

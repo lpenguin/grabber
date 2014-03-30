@@ -1,9 +1,8 @@
-package grabber;
+package grabber.workers.store;
 
 import grabber.data.Domain;
-import grabber.feed.FeedBase;
+import grabber.data.feed.FeedBase;
 
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 

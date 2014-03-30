@@ -1,15 +1,10 @@
 package grabber;
 
-import grabber.data.Domain;
-import grabber.feed.TwitterFeed;
-import grabber.task.TwitterDownloadTask;
-import grabber.workers.ContentStore;
+import grabber.workers.store.ContentStore;
 import grabber.workers.Downloader;
 import grabber.workers.ResultsHandler;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;

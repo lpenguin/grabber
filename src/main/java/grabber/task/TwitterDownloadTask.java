@@ -2,12 +2,11 @@ package grabber.task;
 
 import grabber.TwitterConfigurator;
 import grabber.data.Domain;
-import grabber.feed.TwitterFeed;
+import grabber.data.feed.TwitterFeed;
 import grabber.result.DownloadResult;
 import grabber.result.TwitterDownloadResult;
 import twitter4j.Paging;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
 
 /**
  * Created by nikita on 27.03.14.

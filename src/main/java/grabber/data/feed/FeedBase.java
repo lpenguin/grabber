@@ -1,4 +1,4 @@
-package grabber.feed;
+package grabber.data.feed;
 
 import grabber.data.Domain;
 import grabber.task.DownloadTask;

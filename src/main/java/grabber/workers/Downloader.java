@@ -18,6 +18,7 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     final BlockingQueue<DownloadTask> tasks = new LinkedBlockingQueue<DownloadTask>();
     final ExecutorService workerService;
     final ExecutorService handlerService;
+    Future resultsHandlerFuture;
     final ResultsHandler resultsHandler;
     final BlockingQueue<Future<DownloadResult>> results = new LinkedBlockingQueue<Future<DownloadResult>>();
 
@@ -40,17 +41,20 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     public void run() {
         try {
             logger.info("Starting");
-            handlerService.execute(resultsHandler);
+            resultsHandlerFuture = handlerService.submit(resultsHandler);
             while(!Thread.interrupted()) {
                 resultsHandler.addFuture(workerService.submit(new Worker(tasks.take())));
             }
             logger.info("exiting");
+            resultsHandlerFuture.cancel(true);
         } catch (InterruptedException e) {
             logger.error("interrupted");
+            resultsHandlerFuture.cancel(true);
         }
     }
 
     private class ResultsHandler implements Runnable{
+        private final Logger logger = Logger.getLogger(ResultsHandler.class);
         synchronized void addFuture(Future<DownloadResult> future){
             results.add(future);
         }
@@ -74,10 +78,9 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
                 }
                 logger.info("exiting");
             }catch (InterruptedException e){
-                logger.error("InterruptedException exiting");
+                logger.error("interrupted");
             } catch (ExecutionException e) {
-                logger.error("ExecutionException exiting", e);
-                e.printStackTrace();
+                logger.error("ExecutionException", e);
             }
         }
     }

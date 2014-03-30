@@ -1,10 +1,11 @@
 package grabber.workers;
 
-import grabber.FeedStore;
 import grabber.result.*;
 import grabber.task.ContentDownloadTask;
 import grabber.task.DownloadTask;
 import grabber.task.TwitterDownloadTask;
+import grabber.workers.store.ContentStore;
+import grabber.workers.store.FeedStore;
 import org.apache.log4j.Logger;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -12,12 +13,9 @@ import twitter4j.URLEntity;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by nikita on 26.03.14.
@@ -59,7 +57,7 @@ public class ResultsHandler implements Runnable, Pushable<DownloadResult> {
     }
 
     public void handleContent(ContentDownloadResult result){
-        contentStore.push(result);
+        contentStore.write(result);
     }
 
     public void handleRssSearch(RssSearchResult result) {
