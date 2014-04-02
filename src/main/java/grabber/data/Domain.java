@@ -1,15 +1,19 @@
 package grabber.data;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.net.URL;
 
 /**
  * Created by nikita on 26.03.14.
  */
+@DatabaseTable(tableName = "domains")
 public class Domain {
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setUrl(URL url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -20,20 +24,23 @@ public class Domain {
         this.id = id;
     }
 
+    @DatabaseField(generatedId = true)
     private int id;
+    @DatabaseField
     private String name;
-    private URL url;
+    @DatabaseField
+    private String url;
 
     public String getName() {
         return name;
     }
 
-    public URL getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    public Domain(String name, URL url) {
-
+    public Domain(){}
+    public Domain(String name, String url) {
         this.name = name;
         this.url = url;
     }
