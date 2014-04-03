@@ -2,7 +2,12 @@ package grabber;
 
 import grabber.data.Domain;
 import grabber.database.Database;
+import grabber.store.ContentStore;
 import grabber.store.FeedStore;
+import grabber.utils.FeedSearcher;
+import grabber.workers.Downloader;
+import grabber.workers.ResultsHandler;
+import twitter4j.auth.AccessToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +21,19 @@ import java.util.List;
  * Created by nikita on 02.04.14.
  */
 public class Admin {
+
+    private final FeedSearcher feedSearcher;
+    private final ContentStore contentStore;
+    private final Downloader downloader;
+    private final ResultsHandler resultsHandler;
+
+    public Admin(){
+        contentStore = new ContentStore();
+        downloader = new Downloader(10);
+        resultsHandler = new ResultsHandler(contentStore, downloader);
+        downloader.setDownloadTo(resultsHandler);
+        feedSearcher = new FeedSearcher(downloader);
+    }
 
     public void process(){
         FeedStore.getInstance().load();

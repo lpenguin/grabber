@@ -63,7 +63,7 @@ public class FeedStore{
         domainWriter.flush();
     }
 
-    public void addFeed(Domain domain, FeedBase feed){
+    public void addFeed(FeedBase feed){
         feeds.add(feed);
         try {
             if (feed instanceof RssFeed) {

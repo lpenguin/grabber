@@ -27,6 +27,16 @@ public class ResultsHandler implements Runnable, Pushable<DownloadResult> {
 
     private final Logger logger = Logger.getLogger(ResultsHandler.class);
 
+    public boolean isDownloadAfterSearch() {
+        return downloadAfterSearch;
+    }
+
+    public void setDownloadAfterSearch(boolean downloadAfterSearch) {
+        this.downloadAfterSearch = downloadAfterSearch;
+    }
+
+    private boolean downloadAfterSearch = true;
+
     public ResultsHandler(ContentStore contentStore, Pushable<DownloadTask> downloader) {
         this.contentStore = contentStore;
         this.downloader = downloader;
@@ -62,8 +72,9 @@ public class ResultsHandler implements Runnable, Pushable<DownloadResult> {
 
     public void handleRssSearch(RssSearchResult result) {
         if(result.isStatusOk()){
-            FeedStore.getInstance().addFeed(result.getDownloadTask().getDomain(), result.getFeed());
-            handleRSS(result);
+            FeedStore.getInstance().addFeed(result.getFeed());
+            if(downloadAfterSearch)
+                handleRSS(result);
         }
     }
 
