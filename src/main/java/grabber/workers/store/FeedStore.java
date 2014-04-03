@@ -1,8 +1,15 @@
 package grabber.workers.store;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
 import grabber.data.Domain;
+import grabber.data.database.Database;
 import grabber.data.feed.FeedBase;
+import grabber.data.feed.RssFeed;
+import grabber.data.feed.TwitterFeed;
+import twitter4j.Twitter;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,5 +48,21 @@ public class FeedStore{
         feeds.add(feed);
         domains.add(new DomainFeeds(domain, feeds));
 
+    }
+
+    public void loadFeeds(Database database){
+        try {
+            Dao<Domain, ?> domainDao = DaoManager.createDao(database.getConnectionSource(), Domain.class);
+            Dao<RssFeed, ?> rssFeedDao = DaoManager.createDao(database.getConnectionSource(), RssFeed.class);
+            Dao<TwitterFeed, ?> twitterFeedDao = DaoManager.createDao(database.getConnectionSource(), TwitterFeed.class);
+
+            List<Domain> domains1 = domainDao.queryForAll();
+            for (Domain domain : domains1) {
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
