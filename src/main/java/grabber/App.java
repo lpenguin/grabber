@@ -1,10 +1,14 @@
 package grabber;
 
-import grabber.workers.store.ContentStore;
+import grabber.database.Database;
+import grabber.store.ContentStore;
+import grabber.utils.FeedSearcher;
+import grabber.utils.TwitterConfigurator;
 import grabber.workers.Downloader;
 import grabber.workers.ResultsHandler;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -66,28 +70,31 @@ public class App {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//                executorService.shutdown();
-//                try {
-//                    executorService.awaitTermination(10, TimeUnit.SECONDS);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                List<Runnable> runnables = executorService.shutdownNow();
                 super.run();
             }
         });
     }
 
     public static void main(String[] args){
-        App app = new App();
-        app.process();
+        String connString = "jdbc:sqlite:testdb.db";
         try {
-            System.in.read();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+            Database.getInstance().connect(connString);
+        } catch (SQLException e) {
             e.printStackTrace();
+            return;
         }
-        System.exit(0);
+
+        Admin admin = new Admin();
+        admin.process();
+//        App app = new App();
+//        app.process();
+//        try {
+//            System.in.read();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        System.exit(0);
     }
 
     public void process(){

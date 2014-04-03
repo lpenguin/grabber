@@ -1,6 +1,6 @@
 package grabber.task;
 
-import grabber.TwitterConfigurator;
+import grabber.utils.TwitterConfigurator;
 import grabber.data.Domain;
 import grabber.data.feed.TwitterFeed;
 import grabber.result.DownloadResult;

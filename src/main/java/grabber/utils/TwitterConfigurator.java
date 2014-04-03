@@ -1,4 +1,4 @@
-package grabber;
+package grabber.utils;
 
 import twitter4j.*;
 import twitter4j.auth.AccessToken;

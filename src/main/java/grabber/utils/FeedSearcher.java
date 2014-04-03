@@ -1,4 +1,4 @@
-package grabber;
+package grabber.utils;
 
 import grabber.data.Domain;
 import grabber.task.DownloadTask;
@@ -27,7 +27,8 @@ public class FeedSearcher {
         }
     }
 
-    private URL searchType(URL site, String type) throws MalformedURLException {
-        return new URL(String.format("%s://%s/%s", site.getProtocol(), site.getHost(), type));
+    private URL searchType(String site, String type) throws MalformedURLException {
+        URL siteUrl = new URL(site);
+        return new URL(String.format("%s://%s/%s", siteUrl.getProtocol(), siteUrl.getHost(), type));
     }
 }

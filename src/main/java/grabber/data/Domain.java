@@ -11,16 +11,7 @@ import java.net.URL;
 
 @DatabaseTable(tableName = "domains")
 public class Domain {
-    @DatabaseField(id = true)
-    private int id;
-    @DatabaseField
-    private String name;
-    @DatabaseField
-    private URL url;
-
-    public Domain(String name, URL url) {
-
-        this.name = name;
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -32,6 +23,13 @@ public class Domain {
         this.id = id;
     }
 
+    @DatabaseField(generatedId = true)
+    private int id;
+    @DatabaseField
+    private String name;
+    @DatabaseField
+    private String url;
+
     public String getName() {
         return name;
     }
@@ -40,11 +38,14 @@ public class Domain {
         this.name = name;
     }
 
-    public URL getUrl() {
+    public void setUrl(URL url) {
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(URL url) {
+    public Domain(){}
+    public Domain(String name, String url) {
+        this.name = name;
         this.url = url;
     }
 }
