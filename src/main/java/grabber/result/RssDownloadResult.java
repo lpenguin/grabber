@@ -26,7 +26,7 @@ public class RssDownloadResult extends DownloadResult {
     public RssDownloadResult(RssDownloadTask downloadTask, boolean statusOk, SyndFeed feedInner) {
         super(downloadTask, statusOk);
         this.feedInner = feedInner;
-        feed = new RssFeed(downloadTask.getDomain(), downloadTask.getUrl());
+        feed = new RssFeed(downloadTask.getDomain(), downloadTask.getUrl().toString());
     }
 
     public List<URL> getItems(){

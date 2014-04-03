@@ -2,11 +2,16 @@ package grabber.store;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.sun.syndication.feed.atom.Feed;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
+import grabber.data.feed.RssFeed;
+import grabber.data.feed.TwitterFeed;
+import grabber.database.BufferedWriter;
 import grabber.database.Database;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +19,10 @@ import java.util.List;
  * Created by nikita on 27.03.14.
  */
 public class FeedStore{
+    private static final int FEED_FLUSH_SIZE = 30;
+    private static final int DOMAIN_FLUSH_SIZE = 30;
+    private Database database;
+
     private FeedStore(){}
     private static FeedStore instance;
     public static FeedStore getInstance(){
@@ -22,32 +31,26 @@ public class FeedStore{
         return instance;
     }
 
-    private class DomainWithFeeds {
-        private DomainWithFeeds(Domain domain){
-            this.domain = domain;
-            this.feeds = new LinkedList<FeedBase>();
-        }
+    private final List<Domain> domains = new LinkedList<Domain>();
+    private final List<FeedBase> feeds = new LinkedList<FeedBase>();
 
-        private DomainWithFeeds(Domain domain, List<FeedBase> feeds) {
-            this.domain = domain;
-            this.feeds = feeds;
-        }
+    private BufferedWriter<RssFeed> rssFeedBufferedWriter;
+    private BufferedWriter<TwitterFeed> twitterFeedBufferedWriter;
+    private BufferedWriter<Domain> domainWriter;
 
-        final Domain domain;
-        final List<FeedBase> feeds;
+    public void initialize(Database database){
+        this.database = database;
+
+        rssFeedBufferedWriter = new BufferedWriter<RssFeed>(database.getRssFeedDao(), FEED_FLUSH_SIZE);
+        twitterFeedBufferedWriter = new BufferedWriter<TwitterFeed>(database.getTwitterFeedDao(), FEED_FLUSH_SIZE);
+        domainWriter = new BufferedWriter<Domain>(database.getDomainDao(), DOMAIN_FLUSH_SIZE);
     }
-
-    private final List<DomainWithFeeds> domainsWithFeeds = new LinkedList<DomainWithFeeds>();
-    private final List<DomainWithFeeds> domainWithFeedsToFlush = new LinkedList<DomainWithFeeds>();
 
     public void load(){
         try {
-            Dao<Domain, ?> domainDao = DaoManager.createDao(Database.getInstance().getConnectionSource(), Domain.class);
-            List<Domain> domains = domainDao.queryForAll();
-            for (Domain domain : domains) {
-                domainsWithFeeds.add(new DomainWithFeeds(domain));
-            }
-
+            domains.addAll(database.getDomainDao().queryForAll());
+            feeds.addAll(database.getRssFeedDao().queryForAll());
+            feeds.addAll(database.getTwitterFeedDao().queryForAll());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,35 +58,36 @@ public class FeedStore{
     }
 
     public void save() throws SQLException {
-        Dao<Domain, ?> domainDao = DaoManager.createDao(Database.getInstance().getConnectionSource(), Domain.class);
-        for (DomainWithFeeds domainWithFeeds : domainWithFeedsToFlush) {
-            domainDao.create(domainWithFeeds.domain);
-        }
+        rssFeedBufferedWriter.flush();
+        twitterFeedBufferedWriter.flush();
+        domainWriter.flush();
     }
 
     public void addFeed(Domain domain, FeedBase feed){
-        for (DomainWithFeeds domainWithFeeds : this.domainsWithFeeds) {
-            if(domainWithFeeds.domain.getUrl().equals(domain.getUrl())){
-                domainWithFeeds.feeds.add(feed);
-                return;
-            }
-        }
-        List<FeedBase> feeds = new LinkedList<FeedBase>();
         feeds.add(feed);
-        domainsWithFeeds.add(new DomainWithFeeds(domain, feeds));
+        try {
+            if (feed instanceof RssFeed) {
+                rssFeedBufferedWriter.add((RssFeed) feed);
+            }else if(feed instanceof TwitterFeed){
+                twitterFeedBufferedWriter.add((TwitterFeed)feed);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     public List<Domain> listDomains(){
-        List<Domain> domains = new LinkedList<Domain>();
-        for (DomainWithFeeds domainWithFeed : domainsWithFeeds) {
-            domains.add(domainWithFeed.domain);
-        }
         return domains;
     }
 
     public void addDomain(Domain domain){
-        DomainWithFeeds domainWithFeeds = new DomainWithFeeds(domain);
-        domainsWithFeeds.add(domainWithFeeds);
-        domainWithFeedsToFlush.add(domainWithFeeds);
+        domains.add(domain);
+        try {
+            domainWriter.add(domain);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
+
+
 }

@@ -6,6 +6,7 @@ import grabber.data.Domain;
 import grabber.task.DownloadTask;
 import grabber.task.RssDownloadTask;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -14,15 +15,22 @@ import java.net.URL;
 @DatabaseTable(tableName = "rss_feeds")
 public class RssFeed extends FeedBase {
     @DatabaseField
-    private URL url;
+    private String url;
 
-    public RssFeed(Domain domain, URL url) {
+    public RssFeed(Domain domain, String url) {
         super(domain);
         this.url = url;
     }
 
+    public RssFeed(){}
+
     public URL getUrl() {
-        return url;
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

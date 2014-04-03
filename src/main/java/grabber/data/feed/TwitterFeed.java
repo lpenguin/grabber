@@ -14,6 +14,7 @@ public class TwitterFeed extends FeedBase {
     @DatabaseField
     private String accountName;
 
+    public TwitterFeed(){}
     public TwitterFeed(Domain domain, String accountName) {
         super(domain);
         this.accountName = accountName;

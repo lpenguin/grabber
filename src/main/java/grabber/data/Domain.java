@@ -38,7 +38,6 @@ public class Domain {
         this.name = name;
     }
 
-    public void setUrl(URL url) {
     public String getUrl() {
         return url;
     }

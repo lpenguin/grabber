@@ -14,6 +14,7 @@ public abstract class FeedBase {
 //    @DatabaseField(canBeNull = false, foreign = true)
     private Domain domain;
 
+    public FeedBase(){}
     public FeedBase(Domain domain) {
         this.domain = domain;
     }
