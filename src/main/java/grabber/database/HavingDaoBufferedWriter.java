@@ -8,16 +8,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
-* Created by nikita on 03.04.14.
-*/
-public class BufferedWriter<T>{
-    private final Dao<T, ?> dao;
+ * Created by nikita on 03.04.14.
+ */
+public class HavingDaoBufferedWriter<T extends HavingDao>{
+    private final Database database;
     private List<T> objects = new LinkedList<T>();
     private final int flushSize;
 
-    public BufferedWriter(Dao<T, ?> dao, int flushSize){
-        this.dao = dao;
+    public HavingDaoBufferedWriter(Database database, int flushSize){
         this.flushSize = flushSize;
+        this.database = database;
     }
 
     public void add(T object) throws SQLException {
@@ -28,7 +28,7 @@ public class BufferedWriter<T>{
 
     public void flush() throws SQLException {
         for (T object : objects) {
-            dao.create(object);
+            object.getDao(database).create(object);
         }
         objects.clear();
 

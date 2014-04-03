@@ -1,8 +1,10 @@
 package grabber.data.feed;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import grabber.data.Domain;
+import grabber.database.Database;
 import grabber.task.DownloadTask;
 import grabber.task.RssDownloadTask;
 
@@ -14,6 +16,7 @@ import java.net.URL;
  */
 @DatabaseTable(tableName = "rss_feeds")
 public class RssFeed extends FeedBase {
+
     @DatabaseField
     private String url;
 
@@ -36,5 +39,10 @@ public class RssFeed extends FeedBase {
     @Override
     public DownloadTask getTask() {
         return new RssDownloadTask(getDomain(), getUrl());
+    }
+
+    @Override
+    public Dao getDao(Database database) {
+        return database.getRssFeedDao();
     }
 }

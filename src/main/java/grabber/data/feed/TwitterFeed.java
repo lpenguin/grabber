@@ -1,8 +1,10 @@
 package grabber.data.feed;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import grabber.data.Domain;
+import grabber.database.Database;
 import grabber.task.DownloadTask;
 import grabber.task.TwitterDownloadTask;
 
@@ -27,5 +29,10 @@ public class TwitterFeed extends FeedBase {
     @Override
     public DownloadTask getTask() {
         return new TwitterDownloadTask(getDomain(), this, 1);
+    }
+
+    @Override
+    public Dao getDao(Database database) {
+        return database.getRssFeedDao();
     }
 }

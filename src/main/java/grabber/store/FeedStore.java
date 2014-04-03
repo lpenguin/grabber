@@ -1,17 +1,14 @@
 package grabber.store;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.sun.syndication.feed.atom.Feed;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
 import grabber.data.feed.RssFeed;
 import grabber.data.feed.TwitterFeed;
 import grabber.database.BufferedWriter;
 import grabber.database.Database;
+import grabber.database.HavingDaoBufferedWriter;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,15 +31,13 @@ public class FeedStore{
     private final List<Domain> domains = new LinkedList<Domain>();
     private final List<FeedBase> feeds = new LinkedList<FeedBase>();
 
-    private BufferedWriter<RssFeed> rssFeedBufferedWriter;
-    private BufferedWriter<TwitterFeed> twitterFeedBufferedWriter;
+    private HavingDaoBufferedWriter<FeedBase> feedBufferedWriter;
     private BufferedWriter<Domain> domainWriter;
 
     public void initialize(Database database){
         this.database = database;
 
-        rssFeedBufferedWriter = new BufferedWriter<RssFeed>(database.getRssFeedDao(), FEED_FLUSH_SIZE);
-        twitterFeedBufferedWriter = new BufferedWriter<TwitterFeed>(database.getTwitterFeedDao(), FEED_FLUSH_SIZE);
+        feedBufferedWriter = new HavingDaoBufferedWriter<FeedBase>(database, FEED_FLUSH_SIZE);
         domainWriter = new BufferedWriter<Domain>(database.getDomainDao(), DOMAIN_FLUSH_SIZE);
     }
 
@@ -58,19 +53,14 @@ public class FeedStore{
     }
 
     public void save() throws SQLException {
-        rssFeedBufferedWriter.flush();
-        twitterFeedBufferedWriter.flush();
+        feedBufferedWriter.flush();
         domainWriter.flush();
     }
 
     public void addFeed(FeedBase feed){
         feeds.add(feed);
         try {
-            if (feed instanceof RssFeed) {
-                rssFeedBufferedWriter.add((RssFeed) feed);
-            }else if(feed instanceof TwitterFeed){
-                twitterFeedBufferedWriter.add((TwitterFeed)feed);
-            }
+            feedBufferedWriter.add(feed);
         }catch (SQLException e){
             e.printStackTrace();
         }
