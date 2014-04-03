@@ -33,6 +33,6 @@ public class TwitterFeed extends FeedBase {
 
     @Override
     public Dao getDao(Database database) {
-        return database.getRssFeedDao();
+        return database.getTwitterFeedDao();
     }
 }

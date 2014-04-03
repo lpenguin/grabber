@@ -25,7 +25,7 @@ public class Domain implements HavingDao{
         this.id = id;
     }
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, canBeNull = false)
     private int id;
     @DatabaseField
     private String name;

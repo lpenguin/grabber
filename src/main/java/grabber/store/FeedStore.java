@@ -1,9 +1,8 @@
 package grabber.store;
 
+import com.j256.ormlite.dao.Dao;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
-import grabber.data.feed.RssFeed;
-import grabber.data.feed.TwitterFeed;
 import grabber.database.BufferedWriter;
 import grabber.database.Database;
 import grabber.database.HavingDaoBufferedWriter;
@@ -44,14 +43,23 @@ public class FeedStore{
     public void load(){
         try {
             domains.addAll(database.getDomainDao().queryForAll());
-            feeds.addAll(database.getRssFeedDao().queryForAll());
-            feeds.addAll(database.getTwitterFeedDao().queryForAll());
+            feeds.addAll(loadDomain(database.getRssFeedDao().queryForAll()));
+            feeds.addAll(loadDomain(database.getTwitterFeedDao().queryForAll()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
     }
 
+    public List<? extends FeedBase> loadDomain(List<? extends FeedBase> feeds) throws SQLException {
+        Dao<Domain, Integer> domainDao = database.getDomainDao();
+        for (FeedBase feed : feeds) {
+            Domain domain = domainDao.queryForId(feed.getDomainId());
+            feed.setDomain(domain);
+        }
+
+        return feeds;
+    }
     public void save() throws SQLException {
         feedBufferedWriter.flush();
         domainWriter.flush();
@@ -69,7 +77,7 @@ public class FeedStore{
     public List<Domain> listDomains(){
         return domains;
     }
-
+    public List<FeedBase> listFeeds() { return feeds; }
     public void addDomain(Domain domain){
         domains.add(domain);
         try {
@@ -79,5 +87,11 @@ public class FeedStore{
         }
     }
 
-
+    public Domain searchDomain(String name){
+        for (Domain domain : domains) {
+            if(domain.getName().equals(name))
+                return domain;
+        }
+        return null;
+    }
 }

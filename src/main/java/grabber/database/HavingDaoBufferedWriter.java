@@ -28,6 +28,10 @@ public class HavingDaoBufferedWriter<T extends HavingDao>{
 
     public void flush() throws SQLException {
         for (T object : objects) {
+            if(object instanceof Saveble) {
+                Saveble object1 = (Saveble) object;
+                object1.save();
+            }
             object.getDao(database).create(object);
         }
         objects.clear();

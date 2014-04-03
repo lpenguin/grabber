@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class Database {
     private static Database instance;
     private DatabaseType databaseType;
-    private Dao<Domain, ?> domainDao;
+    private Dao<Domain, Integer> domainDao;
     private Dao<RssFeed, ?> rssFeedDao;
     private Dao<TwitterFeed, ?> twitterFeedDao;
 
@@ -58,7 +58,7 @@ public class Database {
         }
     }
 
-    public Dao<Domain, ?> getDomainDao() {
+    public Dao<Domain, Integer> getDomainDao() {
         return domainDao;
     }
 

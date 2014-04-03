@@ -88,7 +88,7 @@ public class App {
         }
 
         Admin admin = new Admin();
-        admin.process();
+        admin.process(args);
 //        App app = new App();
 //        app.process();
 //        try {

@@ -15,7 +15,7 @@ import java.net.URL;
  * Created by nikita on 27.03.14.
  */
 @DatabaseTable(tableName = "rss_feeds")
-public class RssFeed extends FeedBase {
+public class RssFeed extends FeedBase{
 
     @DatabaseField
     private String url;
