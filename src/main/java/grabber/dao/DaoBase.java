@@ -26,8 +26,4 @@ public abstract class DaoBase {
         }
         return query;
     }
-
-    public static int getInsertedId(Statement statement) throws SQLException {
-        return statement.getGeneratedKeys().getInt(0);
-    }
 }

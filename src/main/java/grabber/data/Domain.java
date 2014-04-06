@@ -1,21 +1,14 @@
 package grabber.data;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import grabber.database.Database;
 
 /**
  * Created by nikita on 26.03.14.
  */
 
-@DatabaseTable(tableName = "domains")
-public class Domain implements HavingDao {
-    @DatabaseField(generatedId = true, canBeNull = false)
+public class Domain{
     private int id;
-    @DatabaseField
     private String name;
-    @DatabaseField
     private String url;
 
     public Domain() {
@@ -54,10 +47,5 @@ public class Domain implements HavingDao {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    @Override
-    public Dao getDao(Database database) {
-        return database.getDomainDao();
     }
 }

@@ -21,7 +21,8 @@ public abstract class FeedDaoBase extends DaoBase implements Dao<FeedBase> {
             insertRssFeed((RssFeed) feedBase);
         else if (feedBase instanceof TwitterFeed)
             insertTwitterFeed((TwitterFeed) feedBase);
-        throw new SQLException("There is no method to insert feedBase: " + feedBase);
+        else
+            throw new SQLException("There is no method to insert feedBase: " + feedBase);
     }
 
     public abstract void insertRssFeed(RssFeed rssFeed) throws SQLException;

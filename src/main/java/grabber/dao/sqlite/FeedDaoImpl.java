@@ -31,16 +31,15 @@ public class FeedDaoImpl extends FeedDaoBase {
         Statement statement = getConnection().createStatement();
         statement.executeUpdate(substituteValues(INSERT_RSS_QUERY, new Object[]{rssFeed.getDomainId(), FeedType.Rss.ordinal(), rssFeed.getUrl()}),
                 Statement.RETURN_GENERATED_KEYS);
-        rssFeed.setId(getInsertedId(statement));
+        rssFeed.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
 
     @Override
     public void insertTwitterFeed(TwitterFeed twitterFeed) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_TWITTER_QUERY, new Object[]{twitterFeed.getDomainId(), FeedType.Twitter.ordinal(), twitterFeed.getAccountName()}),
-                Statement.RETURN_GENERATED_KEYS);
-        twitterFeed.setId(getInsertedId(statement));
+        statement.executeUpdate(substituteValues(INSERT_TWITTER_QUERY, new Object[]{twitterFeed.getDomainId(), FeedType.Twitter.ordinal(), twitterFeed.getAccountName()}));
+        twitterFeed.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
 
@@ -51,13 +50,13 @@ public class FeedDaoImpl extends FeedDaoBase {
         Statement statement = getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(ALL_QUERY);
         while (resultSet.next()){
-            FeedType feedType = FeedType.values()[resultSet.getInt(2)];
+            FeedType feedType = FeedType.values()[resultSet.getInt(3)];
             switch (feedType){
                 case Rss:
-                    feeds.add(new RssFeed(resultSet.getInt(0), resultSet.getInt(1), resultSet.getString(4)));
+                    feeds.add(new RssFeed(resultSet.getInt(1), resultSet.getInt(2), resultSet.getString(5)));
                     break;
                 case Twitter:
-                    feeds.add(new TwitterFeed(resultSet.getInt(0), resultSet.getInt(1), resultSet.getString(3)));
+                    feeds.add(new TwitterFeed(resultSet.getInt(1), resultSet.getInt(2), resultSet.getString(4)));
                     break;
             }
         }

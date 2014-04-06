@@ -1,15 +1,11 @@
 package grabber.data;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import grabber.data.feed.FeedBase;
 
 /**
  * Created by nikita on 30.03.14.
  */
-@DatabaseTable(tableName = "contents")
 public class Content {
-    @DatabaseField(id = true)
     private int id;
     private String text;
     private FeedBase feedBase;

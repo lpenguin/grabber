@@ -112,7 +112,7 @@ public class ResultsHandler implements Runnable, Pushable<DownloadResult> {
         }
 
         TwitterDownloadTask task = (TwitterDownloadTask) result.getDownloadTask();
-        downloader.push(new TwitterDownloadTask(task.getDomain(), task.getFeed(), task.getPage()+1));
+        downloader.push(new TwitterDownloadTask(task.getDomain(), task.getAccount(), task.getPage()+1));
 
     }
 

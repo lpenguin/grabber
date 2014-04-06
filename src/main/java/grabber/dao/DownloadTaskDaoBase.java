@@ -22,11 +22,11 @@ public abstract class DownloadTaskDaoBase extends DaoBase implements Dao<Downloa
             insertContentTask((ContentDownloadTask) task);
         else if (task instanceof RssDownloadTask)
             insertRssTask((RssDownloadTask) task);
-        if (task instanceof RssSearchTask)
+        else if (task instanceof RssSearchTask)
             insertRssSearchTask((RssSearchTask) task);
-        if (task instanceof TwitterDownloadTask)
+        else if (task instanceof TwitterDownloadTask)
             insertTwitterTask((TwitterDownloadTask) task);
-        throw new SQLException("There is no method to insert task: " + task);
+        else throw new SQLException("There is no method to insert task: " + task);
     }
 
     public abstract void insertContentTask(ContentDownloadTask task) throws SQLException;

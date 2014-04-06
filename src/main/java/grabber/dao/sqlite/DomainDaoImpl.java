@@ -30,7 +30,7 @@ public class DomainDaoImpl extends DaoBase implements Dao<Domain> {
         Statement statement = getConnection().createStatement();
         ResultSet resultSet = statement.executeQuery(ALL_QUERY);
         while (resultSet.next()){
-            domains.add(new Domain(resultSet.getInt(0), resultSet.getString(1), resultSet.getString(2)));
+            domains.add(new Domain(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3)));
         }
         statement.close();
         return domains;
@@ -39,9 +39,8 @@ public class DomainDaoImpl extends DaoBase implements Dao<Domain> {
     @Override
     public void insert(Domain domain) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_QUERY, new String[]{domain.getName(), domain.getUrl()}),
-                Statement.RETURN_GENERATED_KEYS);
-        domain.setId(getInsertedId(statement));
+        statement.executeUpdate(substituteValues(INSERT_QUERY, new String[]{domain.getName(), domain.getUrl()}));
+        domain.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
 

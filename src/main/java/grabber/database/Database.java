@@ -1,72 +1,71 @@
 package grabber.database;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.db.DatabaseType;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.table.TableUtils;
+import grabber.dao.Dao;
+import grabber.dao.DaoFactory;
 import grabber.data.Domain;
-import grabber.data.feed.RssFeed;
-import grabber.data.feed.TwitterFeed;
+import grabber.data.feed.FeedBase;
+import grabber.task.DownloadTask;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * Created by nikita on 02.04.14.
  */
 public class Database {
-    private static Database instance;
-    private DatabaseType databaseType;
-    private Dao<Domain, Integer> domainDao;
-    private Dao<RssFeed, ?> rssFeedDao;
-    private Dao<TwitterFeed, ?> twitterFeedDao;
+    private final DaoFactory daoFactory;
+    private Dao<Domain> domainDao;
+    private Dao<FeedBase> feedDao;
+    private Dao<DownloadTask> taskDao;
+    private Connection connection;
 
-    public JdbcConnectionSource getConnectionSource() {
-        return connectionSource;
-    }
-
-    private JdbcConnectionSource connectionSource;
-
-    public static Database getInstance(){
-        if(instance == null)
-            instance = new Database();
-        return instance;
-    }
-
-    private Database(){}
-
-    public void connect(String connectionStr) throws SQLException {
-        connectionSource = new JdbcConnectionSource(connectionStr);
-        createTables();
+    public Database(DaoFactory daoFactory, String connectionStr, boolean createTables) throws SQLException {
+        this.daoFactory = daoFactory;
+        connect(connectionStr);
         createdDaos();
+        if (createTables)
+            createTables();
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    private void connect(String connectionStr) throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        connection = DriverManager.getConnection(connectionStr);
     }
 
     private void createdDaos() throws SQLException {
-        domainDao = DaoManager.createDao(Database.getInstance().getConnectionSource(), Domain.class);
-        rssFeedDao = DaoManager.createDao(Database.getInstance().getConnectionSource(), RssFeed.class);
-        twitterFeedDao = DaoManager.createDao(Database.getInstance().getConnectionSource(), TwitterFeed.class);
+        domainDao = daoFactory.createDao(connection, Domain.class);
+        feedDao = daoFactory.createDao(connection, FeedBase.class);
+        taskDao = daoFactory.createDao(connection, DownloadTask.class);
     }
 
-    private void createTables(){
+    private void createTables() {
         try {
-            TableUtils.createTableIfNotExists(connectionSource, Domain.class);
-            TableUtils.createTableIfNotExists(connectionSource, RssFeed.class);
-            TableUtils.createTableIfNotExists(connectionSource, TwitterFeed.class);
+            domainDao.createTable();
+            feedDao.createTable();
+            taskDao.createTable();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public Dao<Domain, Integer> getDomainDao() {
+    public Dao<Domain> getDomainDao() {
         return domainDao;
     }
 
-    public Dao<RssFeed, ?> getRssFeedDao() {
-        return rssFeedDao;
+    public Dao<DownloadTask> getTaskDao() {
+        return taskDao;
     }
 
-    public Dao<TwitterFeed, ?> getTwitterFeedDao() {
-        return twitterFeedDao;
+    public Dao<FeedBase> getFeedDao() {
+        return feedDao;
     }
 }

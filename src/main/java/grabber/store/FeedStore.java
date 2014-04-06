@@ -1,11 +1,10 @@
 package grabber.store;
 
-import com.j256.ormlite.dao.Dao;
+import grabber.dao.Dao;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
 import grabber.database.BufferedWriter;
 import grabber.database.Database;
-import grabber.database.HavingDaoBufferedWriter;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -30,21 +29,20 @@ public class FeedStore{
     private final List<Domain> domains = new LinkedList<Domain>();
     private final List<FeedBase> feeds = new LinkedList<FeedBase>();
 
-    private HavingDaoBufferedWriter<FeedBase> feedBufferedWriter;
+    private BufferedWriter<FeedBase> feedBufferedWriter;
     private BufferedWriter<Domain> domainWriter;
 
     public void initialize(Database database){
         this.database = database;
 
-        feedBufferedWriter = new HavingDaoBufferedWriter<FeedBase>(database, FEED_FLUSH_SIZE);
+        feedBufferedWriter = new BufferedWriter<FeedBase>(database.getFeedDao(), FEED_FLUSH_SIZE);
         domainWriter = new BufferedWriter<Domain>(database.getDomainDao(), DOMAIN_FLUSH_SIZE);
     }
 
     public void load(){
         try {
-            domains.addAll(database.getDomainDao().queryForAll());
-            feeds.addAll(loadDomain(database.getRssFeedDao().queryForAll()));
-            feeds.addAll(loadDomain(database.getTwitterFeedDao().queryForAll()));
+            domains.addAll(database.getDomainDao().queryAll());
+            feeds.addAll(loadDomain(database.getFeedDao().queryAll()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -52,14 +50,22 @@ public class FeedStore{
     }
 
     public List<? extends FeedBase> loadDomain(List<? extends FeedBase> feeds) throws SQLException {
-        Dao<Domain, Integer> domainDao = database.getDomainDao();
         for (FeedBase feed : feeds) {
-            Domain domain = domainDao.queryForId(feed.getDomainId());
+            Domain domain = findDomain(feed.getDomainId());
             feed.setDomain(domain);
         }
 
         return feeds;
     }
+
+    private Domain findDomain(int domainId) {
+        for (Domain domain : domains) {
+            if(domain.getId() == domainId)
+                return domain;
+        }
+        return null;
+    }
+
     public void save() throws SQLException {
         feedBufferedWriter.flush();
         domainWriter.flush();

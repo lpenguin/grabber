@@ -1,5 +1,6 @@
 package grabber;
 
+import grabber.dao.sqlite.SqliteDaoFactory;
 import grabber.database.Database;
 import grabber.store.ContentStore;
 import grabber.store.FeedStore;
@@ -80,8 +81,8 @@ public class App {
     public static void main(String[] args){
         String connString = "jdbc:sqlite:testdb.db";
         try {
-            Database.getInstance().connect(connString);
-            FeedStore.getInstance().initialize(Database.getInstance());
+            Database database = new Database(new SqliteDaoFactory(), connString, false);
+            FeedStore.getInstance().initialize(database);
         } catch (SQLException e) {
             e.printStackTrace();
             return;
