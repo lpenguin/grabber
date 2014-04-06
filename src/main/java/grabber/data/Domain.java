@@ -5,15 +5,30 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import grabber.database.Database;
 
-import java.net.URL;
-
 /**
  * Created by nikita on 26.03.14.
  */
 
 @DatabaseTable(tableName = "domains")
-public class Domain implements HavingDao{
-    public void setUrl(String url) {
+public class Domain implements HavingDao {
+    @DatabaseField(generatedId = true, canBeNull = false)
+    private int id;
+    @DatabaseField
+    private String name;
+    @DatabaseField
+    private String url;
+
+    public Domain() {
+    }
+
+    public Domain(int id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+    }
+
+    public Domain(String name, String url) {
+        this.name = name;
         this.url = url;
     }
 
@@ -24,13 +39,6 @@ public class Domain implements HavingDao{
     public void setId(int id) {
         this.id = id;
     }
-
-    @DatabaseField(generatedId = true, canBeNull = false)
-    private int id;
-    @DatabaseField
-    private String name;
-    @DatabaseField
-    private String url;
 
     public String getName() {
         return name;
@@ -44,9 +52,7 @@ public class Domain implements HavingDao{
         return url;
     }
 
-    public Domain(){}
-    public Domain(String name, String url) {
-        this.name = name;
+    public void setUrl(String url) {
         this.url = url;
     }
 

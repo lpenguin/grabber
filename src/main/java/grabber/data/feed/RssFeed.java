@@ -15,7 +15,7 @@ import java.net.URL;
  * Created by nikita on 27.03.14.
  */
 @DatabaseTable(tableName = "rss_feeds")
-public class RssFeed extends FeedBase{
+public class RssFeed extends FeedBase {
 
     @DatabaseField
     private String url;
@@ -25,7 +25,13 @@ public class RssFeed extends FeedBase{
         this.url = url;
     }
 
-    public RssFeed(){}
+    public RssFeed(int id, int domainId, String url) {
+        super(id, domainId);
+        this.url = url;
+    }
+
+    public RssFeed() {
+    }
 
     public URL getUrl() {
         try {

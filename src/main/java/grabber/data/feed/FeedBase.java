@@ -39,6 +39,11 @@ public abstract class FeedBase implements HavingDao, Saveble{
         this.domain = domain;
     }
 
+    public FeedBase(int id, int domainId){
+        this.id = id;
+        this.domainId = domainId;
+    }
+
     public Domain getDomain() {
         return domain;
     }
@@ -48,5 +53,9 @@ public abstract class FeedBase implements HavingDao, Saveble{
 
     public void setDomain(Domain domain) {
         this.domain = domain;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
