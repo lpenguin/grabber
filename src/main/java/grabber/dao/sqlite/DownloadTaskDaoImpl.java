@@ -31,8 +31,7 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     @Override
     public void insertContentTask(ContentDownloadTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_CONTENT_QUERY, new Object[]{task.getDomainId(), TaskType.Content.ordinal(), task.getUrl()}),
-                Statement.RETURN_GENERATED_KEYS);
+        statement.executeUpdate(substituteValues(INSERT_CONTENT_QUERY, new Object[]{task.getDomainId(), TaskType.Content.ordinal(), task.getUrl()}));
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
@@ -40,8 +39,7 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     @Override
     public void insertRssTask(RssDownloadTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_RSS_QUERY, new Object[]{task.getDomainId(), TaskType.Rss.ordinal(), task.getUrl()}),
-                Statement.RETURN_GENERATED_KEYS);
+        statement.executeUpdate(substituteValues(INSERT_RSS_QUERY, new Object[]{task.getDomainId(), TaskType.Rss.ordinal(), task.getUrl()}));
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
@@ -49,8 +47,7 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     @Override
     public void insertRssSearchTask(RssSearchTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_RSS_SEARCH_QUERY, new Object[]{task.getDomainId(), TaskType.RssSearch.ordinal(), task.getUrl()}),
-                Statement.RETURN_GENERATED_KEYS);
+        statement.executeUpdate(substituteValues(INSERT_RSS_SEARCH_QUERY, new Object[]{task.getDomainId(), TaskType.RssSearch.ordinal(), task.getUrl()}));
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }

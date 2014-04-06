@@ -1,16 +1,21 @@
 package grabber.workers;
 
+import grabber.database.BufferedWriter;
+import grabber.database.Database;
 import grabber.task.result.DownloadResult;
 import grabber.task.DownloadTask;
 import org.apache.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.concurrent.*;
 
 /**
  * Created by nikita on 23.03.14.
  */
 public class Downloader implements Runnable, Pushable<DownloadTask> {
+    private static final int DOWNLOAD_TASK_BUFFER = 10;
     private final Logger logger = Logger.getLogger(Downloader.class);
+    private final Database database;
 
     Pushable<DownloadResult> downloadTo;
     final BlockingQueue<DownloadTask> tasks = new LinkedBlockingQueue<DownloadTask>();
@@ -19,11 +24,14 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     Future resultsHandlerFuture;
     final ResultsHandler resultsHandler;
     final BlockingQueue<Future<DownloadResult>> results = new LinkedBlockingQueue<Future<DownloadResult>>();
+    BufferedWriter<DownloadTask> taskWriter;
 
-    public Downloader(int numThreads) {
+    public Downloader(Database database, int numThreads) {
         workerService = Executors.newFixedThreadPool(numThreads);
         handlerService = Executors.newSingleThreadExecutor();
         resultsHandler = new ResultsHandler();
+        this.database = database;
+        taskWriter = new BufferedWriter<DownloadTask>(database.getTaskDao(), DOWNLOAD_TASK_BUFFER);
     }
 
     public void setDownloadTo(Pushable<DownloadResult> downloadTo){
@@ -41,13 +49,27 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
             logger.info("Starting");
             resultsHandlerFuture = handlerService.submit(resultsHandler);
             while(!Thread.interrupted()) {
-                resultsHandler.addFuture(workerService.submit(new Worker(tasks.take())));
+                DownloadTask task = tasks.take();
+                try {
+                    taskWriter.add(task);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                resultsHandler.addFuture(workerService.submit(new Worker(task)));
             }
             logger.info("exiting");
             resultsHandlerFuture.cancel(true);
+            taskWriter.flush();
         } catch (InterruptedException e) {
             logger.error("interrupted");
             resultsHandlerFuture.cancel(true);
+            try {
+                taskWriter.flush();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

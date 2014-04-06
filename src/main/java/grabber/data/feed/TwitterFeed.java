@@ -19,8 +19,8 @@ public class TwitterFeed extends FeedBase {
         this.accountName = accountName;
     }
 
-    public TwitterFeed(int id, int domainId, String accountName) {
-        super(id, domainId);
+    public TwitterFeed(int id, int domainId, long lastDownloadTime, String accountName) {
+        super(id, domainId, lastDownloadTime);
         this.accountName = accountName;
     }
 

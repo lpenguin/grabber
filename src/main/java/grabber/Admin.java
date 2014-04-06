@@ -1,19 +1,28 @@
 package grabber;
 
+import grabber.dao.sqlite.SqliteDaoFactory;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
 import grabber.data.feed.RssFeed;
 import grabber.data.feed.TwitterFeed;
+import grabber.database.Database;
 import grabber.store.ContentStore;
 import grabber.store.FeedStore;
 import grabber.utils.FeedSearcher;
 import grabber.workers.Downloader;
 import grabber.workers.ResultsHandler;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by nikita on 02.04.14.
@@ -24,18 +33,52 @@ public class Admin {
     private final ContentStore contentStore;
     private final Downloader downloader;
     private final ResultsHandler resultsHandler;
+    private final Database database;
+    private ExecutorService executorService;
+    private final List<Future> futures = new LinkedList<Future>();
 
-    public Admin(){
+    public static void main(String[] args){
+        String connString = "jdbc:sqlite:testdb.db";
+        Database database;
+        try {
+            database = new Database(new SqliteDaoFactory(), connString);
+            FeedStore.getInstance().initialize(database);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        if(args.length == 0) {
+            BufferedReader br =
+                    new BufferedReader(new InputStreamReader(System.in));
+            String s = null;
+            try {
+                s = br.readLine();
+                args = s.split(" ");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Admin admin = new Admin(database);
+        admin.process(args);
+    }
+
+    public Admin(Database database){
+        this.database = database;
         contentStore = new ContentStore();
-        downloader = new Downloader(10);
+        downloader = new Downloader(database, 10);
         resultsHandler = new ResultsHandler(contentStore, downloader);
         downloader.setDownloadTo(resultsHandler);
         feedSearcher = new FeedSearcher(downloader);
     }
 
     public void process(String[] args){
-        FeedStore.getInstance().load();
-        parseArgs(args);
+        if(args.length == 1 && (args[0].equals("create-tables") || args[0].equals("ct"))){
+            database.createTables();
+        }else{
+            FeedStore.getInstance().load();
+            parseArgs(args);
+        }
     }
 
     private void parseArgs(String[] args){
@@ -58,6 +101,9 @@ public class Admin {
             }else if(command.equals("list-feeds")
                     || command.equals("lf")) {
                 listFeeds();
+            } else if(command.equals("search-feeds") ||
+                    command.equals("sf")){
+                searchFeeds();
             } else
                 System.out.println("no such command: "+command);
             try {
@@ -66,6 +112,46 @@ public class Admin {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void searchFeeds() {
+        resultsHandler.setDownloadAfterSearch(false);
+        executorService = Executors.newFixedThreadPool(3);
+        futures.add(executorService.submit(contentStore));
+        futures.add(executorService.submit(downloader));
+        futures.add(executorService.submit(resultsHandler));
+
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run() {
+                System.out.println("SHUTDOWN HOOOK");
+                for (Future future : futures) {
+                    future.cancel(true);
+                }
+
+                //TODO: нужен ли shutdown и awaitTermination?
+                try {
+                    executorService.shutdown();
+                    executorService.awaitTermination(10, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                super.run();
+            }
+        });
+
+        List<Domain> domains = FeedStore.getInstance().listDomains();
+        for (Domain domain : domains) {
+            feedSearcher.search(domain);
+        }
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.exit(0);
+
     }
 
     private void listFeeds() {

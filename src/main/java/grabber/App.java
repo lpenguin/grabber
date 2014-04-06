@@ -37,17 +37,11 @@ public class App {
     private final ContentStore contentStore;
     private final FeedSearcher feedSearcher;
 
-    private static App instance;
 
-    public static App getInstance(){
-        if(instance == null)
-            instance = new App();
-        return instance;
-    }
 
-    private App() {
+    public App(Database databse) {
         contentStore = new ContentStore();
-        downloader = new Downloader(10);
+        downloader = new Downloader(databse, 10);
         resultsHandler = new ResultsHandler(contentStore, downloader);
         downloader.setDownloadTo(resultsHandler);
         feedSearcher = new FeedSearcher(downloader);
@@ -82,36 +76,24 @@ public class App {
 
     public static void main(String[] args){
         String connString = "jdbc:sqlite:testdb.db";
+        Database database;
         try {
-            Database database = new Database(new SqliteDaoFactory(), connString, false);
+            database = new Database(new SqliteDaoFactory(), connString);
             FeedStore.getInstance().initialize(database);
         } catch (SQLException e) {
             e.printStackTrace();
             return;
         }
 
-        if(args.length == 0) {
-            BufferedReader br =
-                    new BufferedReader(new InputStreamReader(System.in));
-            String s = null;
-            try {
-                s = br.readLine();
-                args = s.split(" ");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        App app = new App(database);
+        app.process();
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        Admin admin = new Admin();
-        admin.process(args);
-//        App app = new App();
-//        app.process();
-//        try {
-//            System.in.read();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        System.exit(0);
+        System.exit(0);
     }
 
     public void process(){

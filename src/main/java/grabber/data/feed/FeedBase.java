@@ -12,6 +12,7 @@ public abstract class FeedBase {
     private int domainId;
     //    @DatabaseField(canBeNull = false, foreign = true)
     private Domain domain;
+    private long lastDownloadTime;
 
     public FeedBase() {
     }
@@ -20,9 +21,28 @@ public abstract class FeedBase {
         this.domain = domain;
     }
 
-    public FeedBase(int id, int domainId) {
+    public FeedBase(int id, int domainId, long lastDownloadTime) {
         this.id = id;
         this.domainId = domainId;
+        this.lastDownloadTime = lastDownloadTime;
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public long getLastDownloadTime() {
+
+        return lastDownloadTime;
+    }
+
+    public void setLastDownloadTime(long lastDownloadTime) {
+        this.lastDownloadTime = lastDownloadTime;
     }
 
     public int getDomainId() {
@@ -42,8 +62,4 @@ public abstract class FeedBase {
     }
 
     public abstract DownloadTask getTask();
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }

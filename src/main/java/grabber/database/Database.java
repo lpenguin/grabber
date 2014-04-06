@@ -20,12 +20,10 @@ public class Database {
     private Dao<DownloadTask> taskDao;
     private Connection connection;
 
-    public Database(DaoFactory daoFactory, String connectionStr, boolean createTables) throws SQLException {
+    public Database(DaoFactory daoFactory, String connectionStr) throws SQLException {
         this.daoFactory = daoFactory;
         connect(connectionStr);
         createdDaos();
-        if (createTables)
-            createTables();
     }
 
     public Connection getConnection() {
@@ -47,7 +45,7 @@ public class Database {
         taskDao = daoFactory.createDao(connection, DownloadTask.class);
     }
 
-    private void createTables() {
+    public void createTables() {
         try {
             domainDao.createTable();
             feedDao.createTable();

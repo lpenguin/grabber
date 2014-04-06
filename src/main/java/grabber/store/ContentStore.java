@@ -1,5 +1,6 @@
 package grabber.store;
 
+import grabber.database.BufferedWriter;
 import grabber.task.result.ContentDownloadResult;
 import org.apache.log4j.Logger;
 

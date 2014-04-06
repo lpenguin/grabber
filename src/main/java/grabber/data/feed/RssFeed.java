@@ -19,8 +19,8 @@ public class RssFeed extends FeedBase {
         this.url = url;
     }
 
-    public RssFeed(int id, int domainId, String url) {
-        super(id, domainId);
+    public RssFeed(int id, int domainId, long lastDownloadTime, String url) {
+        super(id, domainId, lastDownloadTime);
         this.url = url;
     }
 
