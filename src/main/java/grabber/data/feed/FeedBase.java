@@ -1,14 +1,13 @@
 package grabber.data.feed;
 
 import grabber.data.Domain;
-import grabber.database.Saveble;
 import grabber.task.DownloadTask;
 
 /**
  * Created by nikita on 27.03.14.
  */
 
-public abstract class FeedBase implements Saveble {
+public abstract class FeedBase {
     private int id;
     private int domainId;
     //    @DatabaseField(canBeNull = false, foreign = true)
@@ -32,11 +31,6 @@ public abstract class FeedBase implements Saveble {
 
     public void setDomainId(int domainId) {
         this.domainId = domainId;
-    }
-
-    @Override
-    public void save() {
-        domainId = domain.getId();
     }
 
     public Domain getDomain() {

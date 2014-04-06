@@ -1,23 +1,15 @@
 package grabber;
 
-import com.sun.syndication.feed.atom.Feed;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
 import grabber.data.feed.RssFeed;
 import grabber.data.feed.TwitterFeed;
-import grabber.database.Database;
 import grabber.store.ContentStore;
 import grabber.store.FeedStore;
 import grabber.utils.FeedSearcher;
 import grabber.workers.Downloader;
 import grabber.workers.ResultsHandler;
-import twitter4j.auth.AccessToken;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -60,12 +52,14 @@ public class Admin {
             }else if(command.equals("add-twitter-feed") ||
                     command.equals("atf")){
                 addTwitterFeed(strings);
-            }else if(command.equals("list-domains")) {
+            }else if(command.equals("list-domains")
+                    || command.equals("ld")) {
                 listDomains();
-            }else if(command.equals("list-feeds")) {
+            }else if(command.equals("list-feeds")
+                    || command.equals("lf")) {
                 listFeeds();
             } else
-                listDomains();
+                System.out.println("no such command: "+command);
             try {
                 FeedStore.getInstance().save();
             } catch (SQLException e) {
@@ -98,7 +92,7 @@ public class Admin {
     private void addTwitterFeed(List<String> strings) {
         String domainName = strings.remove(0);
         String account = strings.remove(0);
-        Domain domain = FeedStore.getInstance().searchDomain(domainName);
+        Domain domain = FeedStore.getInstance().findDomainByName(domainName);
         if(domain != null)
             FeedStore.getInstance().addFeed(new TwitterFeed(domain, account));
     }
@@ -106,7 +100,7 @@ public class Admin {
     private void addRssFeed(List<String> strings) {
         String domainName = strings.remove(0);
         String url = strings.remove(0);
-        Domain domain = FeedStore.getInstance().searchDomain(domainName);
+        Domain domain = FeedStore.getInstance().findDomainByName(domainName);
         if(domain != null)
             FeedStore.getInstance().addFeed(new RssFeed(domain, url));
     }

@@ -67,11 +67,12 @@ public class FeedStore{
     }
 
     public void save() throws SQLException {
-        feedBufferedWriter.flush();
         domainWriter.flush();
+        feedBufferedWriter.flush();
     }
 
     public void addFeed(FeedBase feed){
+        feed.setDomainId(feed.getDomain().getId());
         feeds.add(feed);
         try {
             feedBufferedWriter.add(feed);
@@ -93,7 +94,7 @@ public class FeedStore{
         }
     }
 
-    public Domain searchDomain(String name){
+    public Domain findDomainByName(String name){
         for (Domain domain : domains) {
             if(domain.getName().equals(name))
                 return domain;

@@ -9,7 +9,9 @@ import grabber.utils.TwitterConfigurator;
 import grabber.workers.Downloader;
 import grabber.workers.ResultsHandler;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,6 +90,17 @@ public class App {
             return;
         }
 
+        if(args.length == 0) {
+            BufferedReader br =
+                    new BufferedReader(new InputStreamReader(System.in));
+            String s = null;
+            try {
+                s = br.readLine();
+                args = s.split(" ");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         Admin admin = new Admin();
         admin.process(args);
 //        App app = new App();
