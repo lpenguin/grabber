@@ -1,6 +1,6 @@
 package grabber.workers;
 
-import grabber.result.*;
+import grabber.task.result.*;
 import grabber.task.ContentDownloadTask;
 import grabber.task.DownloadTask;
 import grabber.task.TwitterDownloadTask;

@@ -1,11 +1,9 @@
 package grabber.workers;
 
-import grabber.result.DownloadResult;
+import grabber.task.result.DownloadResult;
 import grabber.task.DownloadTask;
-import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.concurrent.*;
 
 /**

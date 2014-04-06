@@ -1,4 +1,4 @@
-package grabber.result;
+package grabber.task.result;
 
 import grabber.task.DownloadTask;
 import grabber.workers.ResultsHandler;

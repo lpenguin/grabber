@@ -1,4 +1,4 @@
-package grabber.result;
+package grabber.task.result;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;

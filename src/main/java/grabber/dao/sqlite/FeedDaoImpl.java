@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class FeedDaoImpl extends FeedDaoBase {
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE feeds (id integer primary key autoincrement, domain_id integer not null, type integer not null, url text, account text)";
-    private static final String ALL_QUERY = "SELECT id, domain_id, type, url, account account FROM feeds";
+    private static final String ALL_QUERY = "SELECT id, domain_id, type, url, account FROM feeds";
     private static final String INSERT_RSS_QUERY = "INSERT INTO feeds (domain_id, type, url) values(?, ?, '?')";
     private static final String INSERT_TWITTER_QUERY = "INSERT INTO feeds (domain_id, type, account) values(?, ?, '?')";
 

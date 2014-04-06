@@ -1,6 +1,6 @@
 package grabber.store;
 
-import grabber.result.ContentDownloadResult;
+import grabber.task.result.ContentDownloadResult;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.BlockingQueue;

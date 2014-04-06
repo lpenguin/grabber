@@ -1,7 +1,7 @@
 package grabber.dao.sqlite;
 
+import grabber.dao.Dao;
 import grabber.dao.DaoBase;
-import grabber.dao.DomainDao;
 import grabber.data.Domain;
 
 import java.sql.Connection;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by nikita on 06.04.14.
  */
-public class DomainDaoImpl extends DaoBase implements DomainDao{
+public class DomainDaoImpl extends DaoBase implements Dao<Domain> {
     private static final String CREATE_TABLE_QUERY = "CREATE TABLE domains (id integer primary key autoincrement, name text, url text)";
     private static final String ALL_QUERY = "SELECT id, name, url FROM domains";
     private static final String INSERT_QUERY = "INSERT INTO domains (name, url) values('?', '?')";

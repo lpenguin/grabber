@@ -2,9 +2,8 @@ package grabber.task;
 
 import com.sun.syndication.io.FeedException;
 import grabber.data.Domain;
-import grabber.result.DownloadResult;
-import grabber.result.RssDownloadResult;
-import grabber.result.RssSearchResult;
+import grabber.task.result.DownloadResult;
+import grabber.task.result.RssSearchResult;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,7 +11,11 @@ import java.net.URL;
 /**
  * Created by nikita on 27.03.14.
  */
-public class RssSearchTask extends RssDownloadTask{
+public class RssSearchTask extends RssDownloadTask {
+    public RssSearchTask(int id, int domainId, URL url) {
+        super(id, domainId, url);
+    }
+
     public RssSearchTask(Domain domain, URL url) {
         super(domain, url);
     }

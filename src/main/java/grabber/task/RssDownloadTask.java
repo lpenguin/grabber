@@ -5,19 +5,25 @@ import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import grabber.data.Domain;
-import grabber.result.DownloadResult;
-import grabber.result.RssDownloadResult;
+import grabber.task.result.DownloadResult;
+import grabber.task.result.RssDownloadResult;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URL;
 
 /**
  * Created by nikita on 27.03.14.
  */
-public class RssDownloadTask extends DownloadTask{
+public class RssDownloadTask extends DownloadTask {
+    private final URL url;
+
     public RssDownloadTask(Domain domain, URL url) {
         super(domain);
+        this.url = url;
+    }
+
+    public RssDownloadTask(int id, int domainId, URL url) {
+        super(id, domainId);
         this.url = url;
     }
 
@@ -25,10 +31,8 @@ public class RssDownloadTask extends DownloadTask{
         return url;
     }
 
-    private final URL url;
-
     protected SyndFeed downloadFeed() throws IOException, FeedException {
-         return (new SyndFeedInput()).build(new XmlReader(url));
+        return (new SyndFeedInput()).build(new XmlReader(url));
 
     }
 
