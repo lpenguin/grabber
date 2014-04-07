@@ -150,6 +150,11 @@ public class Admin {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        try {
+            FeedStore.getInstance().save();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         System.exit(0);
 
     }

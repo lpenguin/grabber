@@ -39,7 +39,7 @@ public class FeedDaoImpl extends FeedDaoBase {
     public void insertRssFeed(RssFeed rssFeed) throws SQLException {
         Statement statement = getConnection().createStatement();
         statement.executeUpdate(substituteValues(INSERT_RSS_QUERY, new Object[]{
-                        rssFeed.getDomainId(), FeedType.Rss.ordinal(), rssFeed.getUrl(), rssFeed.getLastDownloadTime()}));
+                        rssFeed.getDomainId(), FeedType.Rss.ordinal(), rssFeed.getUrl().toString(), rssFeed.getLastDownloadTime()}));
         rssFeed.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
