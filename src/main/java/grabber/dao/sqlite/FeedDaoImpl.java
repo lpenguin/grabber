@@ -64,10 +64,10 @@ public class FeedDaoImpl extends FeedDaoBase {
             FeedType feedType = FeedType.values()[resultSet.getInt(3)];
             switch (feedType){
                 case Rss:
-                    feeds.add(new RssFeed(resultSet.getInt(1), resultSet.getInt(2), resultSet.getLong(6), resultSet.getString(5)));
+                    feeds.add(new RssFeed(resultSet.getInt(1), resultSet.getInt(2), resultSet.getLong(6), resultSet.getString(4)));
                     break;
                 case Twitter:
-                    feeds.add(new TwitterFeed(resultSet.getInt(1), resultSet.getInt(2), resultSet.getLong(6), resultSet.getString(4)));
+                    feeds.add(new TwitterFeed(resultSet.getInt(1), resultSet.getInt(2), resultSet.getLong(6), resultSet.getString(5)));
                     break;
             }
         }
