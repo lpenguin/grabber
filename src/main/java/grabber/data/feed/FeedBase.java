@@ -17,6 +17,7 @@ public abstract class FeedBase {
     public FeedBase() {
     }
 
+
     public FeedBase(Domain domain) {
         this.domain = domain;
     }

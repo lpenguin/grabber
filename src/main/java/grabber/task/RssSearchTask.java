@@ -12,8 +12,8 @@ import java.net.URL;
  * Created by nikita on 27.03.14.
  */
 public class RssSearchTask extends RssDownloadTask {
-    public RssSearchTask(int id, int domainId, URL url) {
-        super(id, domainId, url);
+    public RssSearchTask(int id, int domainId, long downloadTime, URL url) {
+        super(id, domainId, downloadTime, url);
     }
 
     public RssSearchTask(Domain domain, URL url) {

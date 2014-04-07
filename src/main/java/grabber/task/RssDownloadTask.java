@@ -22,8 +22,8 @@ public class RssDownloadTask extends DownloadTask {
         this.url = url;
     }
 
-    public RssDownloadTask(int id, int domainId, URL url) {
-        super(id, domainId);
+    public RssDownloadTask(int id, int domainId, long downloadTime, URL url) {
+        super(id, domainId, downloadTime);
         this.url = url;
     }
 

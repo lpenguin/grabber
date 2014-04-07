@@ -14,8 +14,8 @@ import java.net.URL;
 public class ContentDownloadTask extends DownloadTask {
     private final URL url;
 
-    public ContentDownloadTask(int id, int domain_id, URL url) {
-        super(id, domain_id);
+    public ContentDownloadTask(int id, int domain_id, long downloadTime, URL url) {
+        super(id, domain_id, downloadTime);
         this.url = url;
     }
 

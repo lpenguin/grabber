@@ -16,8 +16,8 @@ public class TwitterDownloadTask extends DownloadTask {
     private final int page;
 
 
-    public TwitterDownloadTask(int id, int domain_id, String account, int page) {
-        super(id, domain_id);
+    public TwitterDownloadTask(int id, int domain_id, long downloadTime, String account, int page) {
+        super(id, domain_id, downloadTime);
         this.account = account;
         this.page = page;
     }

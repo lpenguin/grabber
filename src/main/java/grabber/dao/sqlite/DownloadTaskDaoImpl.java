@@ -17,12 +17,19 @@ import java.util.List;
  */
 public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     private static final String CREATE_TABLE_QUERY =
-            "CREATE TABLE tasks (id integer primary key autoincrement, domain_id integer not null, type integer not null, url text, account text, page integer)";
-    private static final String ALL_QUERY = "SELECT type, id, domain_id, url, account, page FROM tasks";
-    private static final String INSERT_RSS_QUERY = "INSERT INTO tasks (domain_id, type, url) values(?, ?, '?')";
-    private static final String INSERT_RSS_SEARCH_QUERY = "INSERT INTO tasks (domain_id, type, url) values(?, ?, '?')";
-    private static final String INSERT_CONTENT_QUERY = "INSERT INTO tasks (domain_id, type, url) values(?, ?, '?')";
-    private static final String INSERT_TWITTER_QUERY = "INSERT INTO feeds (domain_id, type, account, page) values(?, ?, '?', ?)";
+            "CREATE TABLE tasks (id integer primary key autoincrement, " +
+                    "domain_id integer not null, " +
+                    "type integer not null, " +
+                    "url text, " +
+                    "account text, " +
+                    "page integer, " +
+                    "download_time integer" +
+                    ")";
+    private static final String ALL_QUERY = "SELECT type, id, domain_id, url, account, page, download_time FROM tasks";
+    private static final String INSERT_RSS_QUERY = "INSERT INTO tasks (domain_id, type, url, download_time) values(?, ?, '?', ?)";
+    private static final String INSERT_RSS_SEARCH_QUERY = "INSERT INTO tasks (domain_id, type, url, download_time) values(?, ?, '?', ?)";
+    private static final String INSERT_CONTENT_QUERY = "INSERT INTO tasks (domain_id, type, url, download_time) values(?, ?, '?', ?)";
+    private static final String INSERT_TWITTER_QUERY = "INSERT INTO feeds (domain_id, type, account, page, download_time) values(?, ?, '?', ?, ?)";
 
     protected DownloadTaskDaoImpl(Connection connection) {
         super(connection);
@@ -66,33 +73,37 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
         List<DownloadTask> tasks = new LinkedList<DownloadTask>();
 
         Statement statement = getConnection().createStatement();
-        ResultSet resultSet = statement.executeQuery(ALL_QUERY);
-        while (resultSet.next()){
-            TaskType taskType = TaskType.values()[resultSet.getInt(1)];
+        ResultSet rs = statement.executeQuery(ALL_QUERY);
+        while (rs.next()){
+            TaskType taskType = TaskType.values()[rs.getInt(1)];
             switch (taskType){
                 case Rss:
                     try {
-                        tasks.add(new RssDownloadTask(resultSet.getInt(2), resultSet.getInt(3), new URL(resultSet.getString(4))));
+                        tasks.add(new RssDownloadTask(rs.getInt(2), rs.getInt(3),
+                                rs.getLong(7),
+                                new URL(rs.getString(4)
+
+                                )));
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
                     break;
                 case RssSearch:
                     try {
-                        tasks.add(new RssDownloadTask(resultSet.getInt(2), resultSet.getInt(3), new URL(resultSet.getString(4))));
+                        tasks.add(new RssSearchTask(rs.getInt(2), rs.getInt(3), rs.getLong(7), new URL(rs.getString(4))));
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
                     break;
                 case Content:
                     try {
-                        tasks.add(new ContentDownloadTask(resultSet.getInt(2), resultSet.getInt(3), new URL(resultSet.getString(4))));
+                        tasks.add(new ContentDownloadTask(rs.getInt(2), rs.getInt(3), rs.getLong(7), new URL(rs.getString(4))));
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
                     break;
                 case Twitter:
-                    tasks.add(new TwitterDownloadTask(resultSet.getInt(2), resultSet.getInt(3), resultSet.getString(5), resultSet.getInt(6)));
+                    tasks.add(new TwitterDownloadTask(rs.getInt(2), rs.getInt(3),  rs.getLong(7),rs.getString(5), rs.getInt(6)));
                     break;
             }
         }
