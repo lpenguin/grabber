@@ -50,6 +50,7 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
             resultsHandlerFuture = handlerService.submit(resultsHandler);
             while(!Thread.interrupted()) {
                 DownloadTask task = tasks.take();
+                task.setDownloadTime(System.currentTimeMillis());
                 try {
                     taskWriter.add(task);
                 } catch (SQLException e) {
