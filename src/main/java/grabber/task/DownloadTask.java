@@ -8,7 +8,7 @@ import grabber.task.result.DownloadResult;
  */
 public abstract class DownloadTask {
     private int id;
-    private int domain_id;
+    private int domainId;
     private Domain domain;
     private long downloadTime;
 
@@ -20,14 +20,14 @@ public abstract class DownloadTask {
         this.downloadTime = downloadTime;
     }
 
-    protected DownloadTask(int id, int domain_id, long downloadTime) {
+    protected DownloadTask(int id, int domainId, long downloadTime) {
         this.id = id;
-        this.domain_id = domain_id;
+        this.domainId = domainId;
         this.downloadTime = downloadTime;
     }
 
     public DownloadTask(Domain domain) {
-        this.domain = domain;
+        setDomain(domain);
     }
 
     public Domain getDomain() {
@@ -43,13 +43,18 @@ public abstract class DownloadTask {
     }
 
     public int getDomainId() {
-        return domain_id;
+        return domainId;
     }
 
-    public void setDomain_id(int domain_id) {
-        this.domain_id = domain_id;
+    public void setDomainId(int domainId) {
+        this.domainId = domainId;
     }
 
     public abstract DownloadResult download();
 
+    public void setDomain(Domain domain) {
+        this.domain = domain;
+        if(domain != null)
+            domainId = domain.getId();
+    }
 }

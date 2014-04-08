@@ -29,7 +29,7 @@ public class TwitterFeed extends FeedBase {
     }
 
     @Override
-    public DownloadTask getTask() {
+    public DownloadTask getDownloadTask() {
         return new TwitterDownloadTask(getDomain(), accountName, 1);
     }
 

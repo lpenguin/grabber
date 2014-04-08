@@ -62,5 +62,5 @@ public abstract class FeedBase {
         this.domain = domain;
     }
 
-    public abstract DownloadTask getTask();
+    public abstract DownloadTask getDownloadTask();
 }

@@ -1,4 +1,4 @@
-package grabber.dao;
+package grabber.dao.base;
 
 import java.sql.Connection;
 import java.sql.SQLException;

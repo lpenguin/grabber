@@ -27,10 +27,10 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     BufferedWriter<DownloadTask> taskWriter;
 
     public Downloader(Database database, int numThreads) {
+        this.database = database;
         workerService = Executors.newFixedThreadPool(numThreads);
         handlerService = Executors.newSingleThreadExecutor();
         resultsHandler = new ResultsHandler();
-        this.database = database;
         taskWriter = new BufferedWriter<DownloadTask>(database.getTaskDao(), DOWNLOAD_TASK_BUFFER);
     }
 
@@ -39,7 +39,7 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
     }
     @Override
     public void push(DownloadTask object) {
-        System.out.printf("New task: %s", object.getClass().getSimpleName());
+        System.out.printf("New task: %s%n", object.getClass().getSimpleName());
         tasks.add(object);
     }
 
@@ -50,25 +50,19 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
             resultsHandlerFuture = handlerService.submit(resultsHandler);
             while(!Thread.interrupted()) {
                 DownloadTask task = tasks.take();
-                task.setDownloadTime(System.currentTimeMillis());
-                try {
-                    taskWriter.add(task);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
                 resultsHandler.addFuture(workerService.submit(new Worker(task)));
             }
             logger.info("exiting");
-            resultsHandlerFuture.cancel(true);
             taskWriter.flush();
+            resultsHandlerFuture.cancel(true);
         } catch (InterruptedException e) {
             logger.error("interrupted");
-            resultsHandlerFuture.cancel(true);
             try {
                 taskWriter.flush();
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
+            resultsHandlerFuture.cancel(true);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -76,14 +70,18 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
 
     private class ResultsHandler implements Runnable{
         private final Logger logger = Logger.getLogger(ResultsHandler.class);
+
+
         synchronized void addFuture(Future<DownloadResult> future){
             results.add(future);
         }
 
-        synchronized void checkResults() throws ExecutionException, InterruptedException {
+        synchronized void checkResults() throws ExecutionException, InterruptedException, SQLException {
             for (Future<DownloadResult> result : results) {
                 if(result.isDone()) {
                     DownloadResult downloadResult = result.get();
+                    downloadResult.getDownloadTask().setDownloadTime(System.currentTimeMillis());
+                    taskWriter.add(downloadResult.getDownloadTask());
                     System.out.println("Task is done: "+downloadResult.getClass().getSimpleName()+", "+downloadResult.toString());
                     downloadTo.push(downloadResult);
                     results.remove(result);
@@ -98,10 +96,13 @@ public class Downloader implements Runnable, Pushable<DownloadTask> {
                     checkResults();
                 }
                 logger.info("exiting");
+
             }catch (InterruptedException e){
                 logger.error("interrupted");
             } catch (ExecutionException e) {
                 logger.error("ExecutionException", e);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }

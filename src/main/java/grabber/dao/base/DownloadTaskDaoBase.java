@@ -1,9 +1,8 @@
-package grabber.dao;
+package grabber.dao.base;
 
-import grabber.data.feed.FeedBase;
-import grabber.data.feed.TwitterFeed;
+import grabber.dao.Dao;
+import grabber.dao.base.DaoBase;
 import grabber.task.*;
-import grabber.task.result.ContentDownloadResult;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,10 +19,10 @@ public abstract class DownloadTaskDaoBase extends DaoBase implements Dao<Downloa
     public void insert(DownloadTask task) throws SQLException {
         if (task instanceof ContentDownloadTask)
             insertContentTask((ContentDownloadTask) task);
-        else if (task instanceof RssDownloadTask)
-            insertRssTask((RssDownloadTask) task);
         else if (task instanceof RssSearchTask)
             insertRssSearchTask((RssSearchTask) task);
+        else if (task instanceof RssDownloadTask)
+            insertRssTask((RssDownloadTask) task);
         else if (task instanceof TwitterDownloadTask)
             insertTwitterTask((TwitterDownloadTask) task);
         else throw new SQLException("There is no method to insert task: " + task);

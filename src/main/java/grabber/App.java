@@ -7,6 +7,7 @@ import grabber.store.FeedStore;
 import grabber.utils.FeedSearcher;
 import grabber.utils.TwitterConfigurator;
 import grabber.workers.Downloader;
+import grabber.workers.FeedUpdater;
 import grabber.workers.ResultsHandler;
 
 import java.io.BufferedReader;
@@ -34,18 +35,22 @@ public class App {
         return contentStore;
     }
 
+    private final FeedUpdater feedUpdater;
     private final ContentStore contentStore;
     private final FeedSearcher feedSearcher;
 
 
 
     public App(Database databse) {
+        FeedStore.getInstance().initialize(databse);
+        FeedStore.getInstance().load();
+
         contentStore = new ContentStore();
         downloader = new Downloader(databse, 10);
         resultsHandler = new ResultsHandler(contentStore, downloader);
         downloader.setDownloadTo(resultsHandler);
         feedSearcher = new FeedSearcher(downloader);
-
+        feedUpdater = new FeedUpdater(downloader, FeedStore.getInstance());
         try {
             TwitterConfigurator.getInstance().configure();
             if(TwitterConfigurator.getInstance().getAccessToken() == null)
@@ -97,9 +102,10 @@ public class App {
     }
 
     public void process(){
-        executorService = Executors.newFixedThreadPool(3);
+        executorService = Executors.newFixedThreadPool(4);
         futures.add(executorService.submit(contentStore));
         futures.add(executorService.submit(downloader));
         futures.add(executorService.submit(resultsHandler));
+        futures.add(executorService.submit(feedUpdater));
     }
 }

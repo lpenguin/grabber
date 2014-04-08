@@ -37,7 +37,7 @@ public class RssFeed extends FeedBase {
     }
 
     @Override
-    public DownloadTask getTask() {
+    public DownloadTask getDownloadTask() {
         return new RssDownloadTask(getDomain(), getUrl());
     }
 }

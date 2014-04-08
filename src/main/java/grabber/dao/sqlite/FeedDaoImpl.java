@@ -1,7 +1,6 @@
 package grabber.dao.sqlite;
 
-import grabber.dao.FeedDaoBase;
-import grabber.data.Domain;
+import grabber.dao.base.FeedDaoBase;
 import grabber.data.feed.FeedBase;
 import grabber.data.feed.RssFeed;
 import grabber.data.feed.TwitterFeed;

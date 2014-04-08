@@ -1,6 +1,6 @@
 package grabber.dao.sqlite;
 
-import grabber.dao.DownloadTaskDaoBase;
+import grabber.dao.base.DownloadTaskDaoBase;
 import grabber.task.*;
 
 import java.net.MalformedURLException;
@@ -38,7 +38,7 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     @Override
     public void insertContentTask(ContentDownloadTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_CONTENT_QUERY, new Object[]{task.getDomainId(), TaskType.Content.ordinal(), task.getUrl()}));
+        statement.executeUpdate(substituteValues(INSERT_CONTENT_QUERY, new Object[]{task.getDomainId(), TaskType.Content.ordinal(), task.getUrl(), task.getDownloadTime()}));
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
@@ -46,7 +46,8 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     @Override
     public void insertRssTask(RssDownloadTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_RSS_QUERY, new Object[]{task.getDomainId(), TaskType.Rss.ordinal(), task.getUrl()}));
+        String q = substituteValues(INSERT_RSS_QUERY, new Object[]{task.getDomainId(), TaskType.Rss.ordinal(), task.getUrl(), task.getDownloadTime()});
+        statement.executeUpdate(q);
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
@@ -54,7 +55,7 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     @Override
     public void insertRssSearchTask(RssSearchTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
-        statement.executeUpdate(substituteValues(INSERT_RSS_SEARCH_QUERY, new Object[]{task.getDomainId(), TaskType.RssSearch.ordinal(), task.getUrl()}));
+        statement.executeUpdate(substituteValues(INSERT_RSS_SEARCH_QUERY, new Object[]{task.getDomainId(), TaskType.RssSearch.ordinal(), task.getUrl(), task.getDownloadTime()}));
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
@@ -63,7 +64,7 @@ public class DownloadTaskDaoImpl extends DownloadTaskDaoBase {
     public void insertTwitterTask(TwitterDownloadTask task) throws SQLException {
         Statement statement = getConnection().createStatement();
         statement.executeUpdate(substituteValues(INSERT_TWITTER_QUERY, new Object[]{
-                        task.getDomainId(), TaskType.Twitter.ordinal(), task.getAccount(), task.getPage()}));
+                        task.getDomainId(), TaskType.Twitter.ordinal(), task.getAccount(), task.getPage(), task.getDownloadTime()}));
         task.setId(Helper.getLastInsertId(statement));
         statement.close();
     }
