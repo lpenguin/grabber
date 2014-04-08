@@ -1,19 +1,36 @@
 package grabber.data;
 
-import grabber.data.feed.FeedBase;
+import grabber.task.DownloadTask;
 
 /**
  * Created by nikita on 30.03.14.
  */
 public class Content {
+    private DownloadTask downloadTask;
     private int id;
+    private int taskId;
     private String text;
-    private FeedBase feedBase;
 
-    public Content(int id, String text, FeedBase feedBase) {
+    public Content(int id, String text, DownloadTask downloadTask) {
         this.id = id;
         this.text = text;
-        this.feedBase = feedBase;
+        this.downloadTask = downloadTask;
+    }
+
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
+    public DownloadTask getDownloadTask() {
+        return downloadTask;
+    }
+
+    public void setDownloadTask(DownloadTask downloadTask) {
+        this.downloadTask = downloadTask;
     }
 
     public int getId() {
@@ -22,9 +39,5 @@ public class Content {
 
     public String getText() {
         return text;
-    }
-
-    public FeedBase getFeedBase() {
-        return feedBase;
     }
 }

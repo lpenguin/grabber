@@ -13,6 +13,11 @@ import java.util.List;
  * Created by nikita on 08.04.14.
  */
 public class ContentDaoImpl extends DaoBase implements Dao<Content>{
+    private static final String CREATE_TABLE_QUERY = "CREATE TABLE contents (id integer primary key autoincrement, task_id integer, content text)";
+    private static final String ALL_QUERY = "SELECT id, task_id, content FROM contents";
+    private static final String INSERT_QUERY = "INSERT INTO contents (task_id, content) values(?, '?')";
+
+
     protected ContentDaoImpl(Connection connection) {
         super(connection);
     }
