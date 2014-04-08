@@ -1,7 +1,7 @@
 package grabber.dao.base;
 
 import grabber.dao.Dao;
-import grabber.dao.base.DaoBase;
+import grabber.dao.DaoBase;
 import grabber.data.feed.FeedBase;
 import grabber.data.feed.RssFeed;
 import grabber.data.feed.TwitterFeed;

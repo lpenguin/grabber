@@ -2,6 +2,7 @@ package grabber.dao.sqlite;
 
 import grabber.dao.Dao;
 import grabber.dao.DaoFactory;
+import grabber.data.Content;
 import grabber.data.Domain;
 import grabber.data.feed.FeedBase;
 import grabber.task.DownloadTask;
@@ -20,6 +21,8 @@ public class SqliteDaoFactory implements DaoFactory {
             return (Dao<T>) new FeedDaoImpl(connection);
         } else if(tClass.isAssignableFrom(DownloadTask.class)){
             return (Dao<T>) new DownloadTaskDaoImpl(connection);
+        } else if(tClass.isAssignableFrom(Content.class)){
+            return (Dao<T>) new ContentDaoImpl(connection);
         }
         return null;
     }

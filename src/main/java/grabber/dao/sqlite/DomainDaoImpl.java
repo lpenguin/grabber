@@ -1,7 +1,7 @@
 package grabber.dao.sqlite;
 
 import grabber.dao.Dao;
-import grabber.dao.base.DaoBase;
+import grabber.dao.DaoBase;
 import grabber.data.Domain;
 
 import java.sql.Connection;

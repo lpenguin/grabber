@@ -1,7 +1,7 @@
 package grabber.dao.base;
 
 import grabber.dao.Dao;
-import grabber.dao.base.DaoBase;
+import grabber.dao.DaoBase;
 import grabber.task.*;
 
 import java.sql.Connection;
